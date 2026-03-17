@@ -1,122 +1,204 @@
 <!DOCTYPE html>
 <html lang="az">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SmartPortal Vizual Qiymət Kalkulyatoru</title>
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
-<style>
-body{margin:0;padding:0;font-family:'Montserrat',sans-serif;background:#f4f4f9;}
-.container{max-width:1000px;margin:50px auto;padding:20px;background:white;border-radius:15px;box-shadow:0 8px 25px rgba(0,0,0,0.1);}
-h1,h2{text-align:center;color:#003366;margin-bottom:30px;}
-.cards, .addons{display:flex;flex-wrap:wrap;justify-content:center;gap:20px;}
-.card, .addon{background:white;border:1px solid #ccc;border-radius:12px;padding:20px;width:180px;text-align:center;cursor:pointer;transition:0.3s;box-shadow:0 4px 15px rgba(0,0,0,0.08);}
-.card:hover, .addon:hover{transform:translateY(-5px) scale(1.03);box-shadow:0 8px 20px rgba(0,0,0,0.15);}
-.card.selected, .addon.selected{border:2px solid #ffa500;box-shadow:0 8px 25px rgba(0,0,0,0.2);}
-.card img, .addon img{width:80px;height:80px;margin-bottom:10px;}
-.total{margin-top:30px;text-align:center;font-size:1.5em;color:#003366;font-weight:700;}
-button.cta{display:block;margin:25px auto;padding:12px 25px;background:#ffa500;color:white;border:none;border-radius:8px;font-weight:600;cursor:pointer;transition:0.3s;}
-button.cta:hover{background:#ff7f00;}
-@media(max-width:600px){.card,.addon{width:45%;}}
-@media(max-width:400px){.card,.addon{width:90%;}}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Qiymət Kalkulyatoru | Sayt Sifarişi</title>
+    <style>
+        :root {
+            --primary-color: #0056b3;
+            --secondary-color: #f8f9fa;
+            --accent-color: #ffc107;
+            --text-color: #333;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #eef2f7;
+            color: var(--text-color);
+            display: flex;
+            justify-content: center;
+            padding: 40px 20px;
+        }
+
+        .calculator-card {
+            background: white;
+            width: 100%;
+            max-width: 600px;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        h2 {
+            text-align: center;
+            color: var(--primary-color);
+            margin-bottom: 25px;
+        }
+
+        .section-title {
+            font-weight: bold;
+            margin: 20px 0 10px;
+            border-bottom: 2px solid var(--secondary-color);
+            padding-bottom: 5px;
+        }
+
+        .option-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .option-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px;
+            background: var(--secondary-color);
+            border-radius: 8px;
+            transition: 0.3s;
+            cursor: pointer;
+        }
+
+        .option-item:hover {
+            background: #e2e6ea;
+        }
+
+        .option-item input {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .price-tag {
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .total-container {
+            margin-top: 30px;
+            padding: 20px;
+            background: var(--primary-color);
+            color: white;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .total-price {
+            font-size: 2rem;
+            display: block;
+            margin-top: 5px;
+            font-weight: 900;
+        }
+
+        .order-btn {
+            width: 100%;
+            padding: 15px;
+            margin-top: 20px;
+            border: none;
+            background: var(--accent-color);
+            color: #000;
+            font-weight: bold;
+            font-size: 1.1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .order-btn:hover {
+            background: #e0a800;
+            transform: translateY(-2px);
+        }
+    </style>
 </head>
 <body>
 
-<div class="container">
-<h1>SmartPortal Qiymət Kalkulyatoru</h1>
+<div class="calculator-card">
+    <h2>Saytın Qiymətini Hesabla</h2>
 
-<h2>Sayt Paketləri</h2>
-<div class="cards" id="packageCards">
-<div class="card" data-price="400">
-<img src="https://via.placeholder.com/80?text=Landing" alt="Landing Page">
-<h3>Landing Page</h3>
-<p>400 AZN</p>
-</div>
-<div class="card" data-price="600">
-<img src="https://via.placeholder.com/80?text=Vizitka" alt="Vizitka">
-<h3>Vizitka Sayt</h3>
-<p>600 AZN</p>
-</div>
-<div class="card" data-price="1000">
-<img src="https://via.placeholder.com/80?text=Korporativ" alt="Korporativ">
-<h3>Korporativ</h3>
-<p>1000 AZN</p>
-</div>
-<div class="card" data-price="1500">
-<img src="https://via.placeholder.com/80?text=E-Ticarət" alt="E-Ticarət">
-<h3>E-Ticarət</h3>
-<p>1500 AZN</p>
-</div>
-</div>
+    <div class="section-title">Saytın Növü</div>
+    <div class="option-group">
+        <label class="option-item">
+            <span>Landing Page (Təksəhifəli)</span>
+            <div>
+                <span class="price-tag">200 AZN</span>
+                <input type="radio" name="siteType" value="200" checked onchange="calculateTotal()">
+            </div>
+        </label>
+        <label class="option-item">
+            <span>Korporativ Veb-sayt</span>
+            <div>
+                <span class="price-tag">500 AZN</span>
+                <input type="radio" name="siteType" value="500" onchange="calculateTotal()">
+            </div>
+        </label>
+        <label class="option-item">
+            <span>E-ticarət (Onlayn Mağaza)</span>
+            <div>
+                <span class="price-tag">1200 AZN</span>
+                <input type="radio" name="siteType" value="1200" onchange="calculateTotal()">
+            </div>
+        </label>
+    </div>
 
-<h2>Əlavə Xidmətlər</h2>
-<div class="addons" id="addonCards">
-<div class="addon" data-price="50"><img src="https://via.placeholder.com/80?text=Portfolio" alt="Portfolio"><p>Portfolio +50 AZN</p></div>
-<div class="addon" data-price="30"><img src="https://via.placeholder.com/80?text=Admin" alt="Admin Panel"><p>Admin Panel +30 AZN</p></div>
-<div class="addon" data-price="40"><img src="https://via.placeholder.com/80?text=Chat" alt="Canlı Chat"><p>Canlı Chat +40 AZN</p></div>
-<div class="addon" data-price="60"><img src="https://via.placeholder.com/80?text=SEO" alt="SEO"><p>SEO +60 AZN</p></div>
-<div class="addon" data-price="20"><img src="https://via.placeholder.com/80?text=Blog" alt="Blog"><p>Bloq +20 AZN</p></div>
-</div>
+    <div class="section-title">Əlavə Xidmətlər</div>
+    <div class="option-group">
+        <label class="option-item">
+            <span>Mobil Adaptivlik (Responsive)</span>
+            <div>
+                <span class="price-tag">+50 AZN</span>
+                <input type="checkbox" class="extra" value="50" onchange="calculateTotal()">
+            </div>
+        </label>
+        <label class="option-item">
+            <span>SEO Optimizasiya (İlkin)</span>
+            <div>
+                <span class="price-tag">+100 AZN</span>
+                <input type="checkbox" class="extra" value="100" onchange="calculateTotal()">
+            </div>
+        </label>
+        <label class="option-item">
+            <span>Çoxdillilik (Hər dil üçün)</span>
+            <div>
+                <span class="price-tag">+150 AZN</span>
+                <input type="checkbox" class="extra" value="150" onchange="calculateTotal()">
+            </div>
+        </label>
+        <label class="option-item">
+            <span>Onlayn Ödəniş Sistemi</span>
+            <div>
+                <span class="price-tag">+250 AZN</span>
+                <input type="checkbox" class="extra" value="250" onchange="calculateTotal()">
+            </div>
+        </label>
+    </div>
 
-<h2>Layihə Prioriteti</h2>
-<label for="priority">Təcili layihə: <span id="priorityVal">1x</span></label>
-<input type="range" id="priority" min="1" max="2" step="0.1" value="1">
+    <div class="total-container">
+        <span>Təxmini Qiymət:</span>
+        <span class="total-price" id="totalPrice">200 AZN</span>
+    </div>
 
-<div class="total">Cəmi Qiymət: <span id="total">0</span> AZN</div>
-<button class="cta" id="orderBtn">Sifariş ver WhatsApp</button>
+    <button class="order-btn">İndi Sifariş Et</button>
 </div>
 
 <script>
-let selectedPackage = null;
-let selectedAddons = new Set();
-const totalDisplay = document.getElementById('total');
-const prioritySlider = document.getElementById('priority');
-const priorityVal = document.getElementById('priorityVal');
-const orderBtn = document.getElementById('orderBtn');
+    function calculateTotal() {
+        // Sayt növünün qiyməti
+        let basePrice = parseInt(document.querySelector('input[name="siteType"]:checked').value);
+        
+        // Seçilmiş əlavə xidmətlərin cəmi
+        let extras = document.querySelectorAll('.extra:checked');
+        let extraTotal = 0;
+        extras.forEach(item => {
+            extraTotal += parseInt(item.value);
+        });
 
-function calculateTotal(){
-    let base = selectedPackage?parseFloat(selectedPackage.dataset.price):0;
-    let addonsTotal = 0;
-    selectedAddons.forEach(a=>{addonsTotal+=parseFloat(a.dataset.price)});
-    let multiplier = parseFloat(prioritySlider.value);
-    priorityVal.innerText = multiplier.toFixed(1) + "x";
-    totalDisplay.innerText = ((base+addonsTotal)*multiplier).toFixed(0);
-}
+        // Ümumi cəm
+        let finalTotal = basePrice + extraTotal;
 
-// Paket seçimi
-document.querySelectorAll('#packageCards .card').forEach(card=>{
-    card.addEventListener('click', ()=>{
-        if(selectedPackage) selectedPackage.classList.remove('selected');
-        card.classList.add('selected');
-        selectedPackage = card;
-        calculateTotal();
-    });
-});
-
-// Əlavə xidmətlər seçimi
-document.querySelectorAll('#addonCards .addon').forEach(addon=>{
-    addon.addEventListener('click', ()=>{
-        if(selectedAddons.has(addon)){
-            selectedAddons.delete(addon);
-            addon.classList.remove('selected');
-        } else{
-            selectedAddons.add(addon);
-            addon.classList.add('selected');
-        }
-        calculateTotal();
-    });
-});
-
-// Prioritet slider
-prioritySlider.addEventListener('input', calculateTotal);
-
-// WhatsApp sifariş linki
-orderBtn.addEventListener('click', ()=>{
-    let total = totalDisplay.innerText;
-    let msg = `Salam! Mən SmartPortal-da sayt sifarişi etmək istəyirəm. Ümumi qiymət: ${total} AZN.`;
-    window.open(`https://wa.me/994505459085?text=${encodeURIComponent(msg)}`, '_blank');
-});
+        // Ekranda göstər
+        document.getElementById('totalPrice').innerText = finalTotal + " AZN";
+    }
 </script>
 
 </body>

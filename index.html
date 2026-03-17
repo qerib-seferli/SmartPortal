@@ -3,159 +3,85 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SmartPortal Web Studio</title>
+<title>SmartPortal Qiymət Kalkulyatoru</title>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
-* { box-sizing: border-box; margin:0; padding:0; font-family:'Montserrat', sans-serif; scroll-behavior:smooth;}
-body { background:#f4f4f9; color:#333;}
-header { background:#003366; color:white; padding:70px 20px; text-align:center; position:relative; overflow:hidden;}
-header h1 { font-size:3em; margin-bottom:10px;}
-header p { font-size:1.2em;}
-nav { display:flex; justify-content:center; background:#002244; padding:15px; flex-wrap:wrap; position:sticky; top:0; z-index:10;}
-nav a { color:white; text-decoration:none; margin:5px 15px; font-weight:600; position:relative; transition:0.3s;}
-nav a::after { content:""; position:absolute; left:0; bottom:-3px; width:0%; height:2px; background:#ffa500; transition:0.3s;}
-nav a:hover::after { width:100%; }
-.hero { text-align:center; padding:90px 20px; background:white; margin:20px; border-radius:15px; box-shadow:0 8px 25px rgba(0,0,0,0.1);}
-.hero h2 { font-size:2.8em; margin-bottom:15px; color:#003366;}
-.hero p { font-size:1.1em; margin-bottom:25px;}
-.hero input[type="text"] { padding:12px 15px; width:300px; border-radius:8px; border:1px solid #ccc; margin-right:10px;}
-.hero button { padding:12px 20px; border:none; border-radius:8px; background:#ffa500; color:white; font-weight:600; cursor:pointer; transition:0.3s;}
-.hero button:hover { background:#ff7f00; }
-
-.stats { display:flex; justify-content:center; flex-wrap:wrap; margin:40px 10px; gap:30px; }
-.stat { background:white; padding:25px; border-radius:15px; width:180px; box-shadow:0 4px 20px rgba(0,0,0,0.1); text-align:center; }
-.stat h3 { font-size:2em; color:#003366; margin-bottom:10px; }
-.stat p { font-size:1em; }
-
-.services, .packages, .portfolio, .team, .contact, .faq, .blog { margin:50px 10px; text-align:center; }
-.services h2, .packages h2, .portfolio h2, .team h2, .contact h2, .faq h2, .blog h2 { margin-bottom:40px; color:#003366; }
-.cards, .members, .portfolio-items { display:flex; flex-wrap:wrap; justify-content:center; gap:25px; }
-.card, .member, .portfolio-item { background:white; padding:20px; border-radius:15px; width:280px; box-shadow:0 6px 25px rgba(0,0,0,0.1); transition:0.3s; cursor:pointer; }
-.card:hover, .member:hover, .portfolio-item:hover { transform:translateY(-8px) scale(1.05); box-shadow:0 12px 30px rgba(0,0,0,0.15);}
-.card h3, .member h4, .portfolio-item h4 { color:#003366; margin-bottom:10px; }
-.card p, .member p, .portfolio-item p { font-size:0.95em; line-height:1.5; }
-button.cta { padding:12px 25px; border:none; border-radius:8px; background:#ffa500; color:white; font-weight:600; cursor:pointer; transition:0.3s;}
-button.cta:hover { background:#ff7f00; }
-
-.contact a { display:inline-block; margin:10px; text-decoration:none; background:#003366; color:white; padding:12px 25px; border-radius:8px; transition:0.3s;}
-.contact a:hover { background:#002244; transform:scale(1.05); }
-
-footer { text-align:center; padding:25px; background:#003366; color:white; margin-top:20px; font-size:0.9em; }
-
-@media(max-width:992px){ .cards, .members, .portfolio-items, .stats { flex-direction:column; align-items:center;} .card, .member, .portfolio-item, .stat { width:90%; } }
-@media(max-width:480px){ header h1 { font-size:2em;} .hero h2 { font-size:1.8em;} .hero input[type="text"] { width:80%; margin-bottom:10px;} .hero button { width:50%;} }
+body{font-family:'Montserrat',sans-serif;margin:0;padding:0;background:#f4f4f9;color:#333;}
+.container{max-width:1000px;margin:50px auto;padding:20px;background:white;border-radius:15px;box-shadow:0 8px 25px rgba(0,0,0,0.1);}
+h1,h2{color:#003366;text-align:center;margin-bottom:30px;}
+label{display:block;margin:15px 0 5px;font-weight:600;}
+select, input[type="checkbox"], input[type="number"], input[type="range"]{margin-right:10px;padding:8px;border-radius:6px;border:1px solid #ccc;}
+.checkbox-group label{display:flex;align-items:center;margin-bottom:10px;}
+.total{margin-top:25px;font-size:1.5em;text-align:center;color:#003366;font-weight:700;}
+button.cta{display:block;margin:25px auto;padding:12px 25px;background:#ffa500;color:white;border:none;border-radius:8px;font-weight:600;cursor:pointer;transition:0.3s;}
+button.cta:hover{background:#ff7f00;}
+@media(max-width:600px){.container{margin:20px;padding:15px;}}
 </style>
 </head>
 <body>
 
-<header>
-<h1>SmartPortal Web Studio</h1>
-<p>Çoxfunksiyalı veb-portal və xidmət həlləri</p>
-</header>
+<div class="container">
+<h1>SmartPortal Qiymət Kalkulyatoru</h1>
 
-<nav>
-<a href="#services">Xidmətlər</a>
-<a href="#packages">Paketlər</a>
-<a href="#portfolio">Portfolio</a>
-<a href="#team">Komanda</a>
-<a href="#contact">Əlaqə</a>
-<a href="#faq">FAQ</a>
-<a href="#blog">Bloq</a>
-</nav>
+<label for="package">Sayt Paketi:</label>
+<select id="package">
+<option value="400">Landing Page - 400 AZN</option>
+<option value="600">Vizitka Sayt - 600 AZN</option>
+<option value="1000">Korporativ - 1000 AZN</option>
+<option value="1500">E-Ticarət - 1500 AZN</option>
+</select>
 
-<section class="hero">
-<h2>Domeninizi seçin və saytınızı başlatın</h2>
-<p>Sürətli .az, .com, .net yoxlanışı və SmartPortal ilə internetdə mövcud olun</p>
-<input type="text" placeholder="Domen adı daxil edin..."><button>Axtar</button>
-</section>
-
-<div class="stats">
-<div class="stat"><h3 id="sitesCount">0</h3><p>Hazırlanan saytlar</p></div>
-<div class="stat"><h3 id="clientsCount">0</h3><p>Aktiv müştərilər</p></div>
-<div class="stat"><h3 id="yearsCount">0</h3><p>Təcrübə illəri</p></div>
+<h2>Əlavə Xidmətlər</h2>
+<div class="checkbox-group">
+<label><input type="checkbox" class="addon" value="50"> Portfolio Bölməsi (+50 AZN)</label>
+<label><input type="checkbox" class="addon" value="30"> Admin Panel (+30 AZN)</label>
+<label><input type="checkbox" class="addon" value="40"> Canlı Chat / WhatsApp (+40 AZN)</label>
+<label><input type="checkbox" class="addon" value="60"> SEO Optimizasiya (+60 AZN)</label>
+<label><input type="checkbox" class="addon" value="20"> Bloq Bölməsi (+20 AZN)</label>
 </div>
 
-<section class="services" id="services">
-<h2>Xidmətlərimiz</h2>
-<div class="cards">
-<div class="card"><h3>Veb Dizayn</h3><p>Mobil uyğun, modern və SEO-friendly saytlar</p></div>
-<div class="card"><h3>SEO</h3><p>Açar söz optimizasiyası və Google sıralaması</p></div>
-<div class="card"><h3>Hostinq</h3><p>Linux/Windows serverlər, SSD və sürətli yüklənmə</p></div>
-<div class="card"><h3>Logo Dizayn</h3><p>Professional və cəlbedici brend vizualı</p></div>
+<h2>Layihə Prioriteti</h2>
+<label for="priority">Təcili layihə: <span id="priorityVal">1x</span></label>
+<input type="range" id="priority" min="1" max="2" step="0.1" value="1">
+
+<div class="total">Cəmi Qiymət: <span id="total">0</span> AZN</div>
+<button class="cta" id="orderBtn">Sifariş ver WhatsApp</button>
 </div>
-</section>
-
-<section class="packages" id="packages">
-<h2>Paketlərimiz</h2>
-<div class="cards">
-<div class="card"><h3>Landing Page</h3><p>SSL + 1 domen + 1 aylıq hostinq</p><button class="cta">Sifariş et</button></div>
-<div class="card"><h3>Vizitka Sayt</h3><p>SSL + 1 domen + 3 aylıq hostinq</p><button class="cta">Sifariş et</button></div>
-<div class="card"><h3>Korporativ</h3><p>SSL + 2 domen + 6 aylıq hostinq + Admin panel</p><button class="cta">Sifariş et</button></div>
-<div class="card"><h3>E-Ticarət</h3><p>SSL + 2 domen + 12 aylıq hostinq + Admin + Ödəniş inteqrasiya</p><button class="cta">Sifariş et</button></div>
-</div>
-</section>
-
-<section class="portfolio" id="portfolio">
-<h2>Portfolio</h2>
-<div class="portfolio-items">
-<div class="portfolio-item"><h4>Restoran Saytı</h4><p>Live Preview</p></div>
-<div class="portfolio-item"><h4>Tibb Portalı</h4><p>Live Preview</p></div>
-<div class="portfolio-item"><h4>Təhsil Saytı</h4><p>Live Preview</p></div>
-<div class="portfolio-item"><h4>Tikinti Portalı</h4><p>Live Preview</p></div>
-</div>
-</section>
-
-<section class="team" id="team">
-<h2>Komandamız</h2>
-<div class="members">
-<div class="member"><img src="https://via.placeholder.com/200" alt="Qərib Səfərli"><h4>Qərib Səfərli</h4><p>Rəhbər / Backend Developer</p><p>+994505459085</p></div>
-<div class="member"><img src="https://via.placeholder.com/200" alt="Dizayner"><h4>Dizayner</h4><p>UI/UX Designer</p><p>+994555459085</p></div>
-<div class="member"><img src="https://via.placeholder.com/200" alt="Frontend"><h4>Frontend Developer</h4><p>Web & Mobile UI</p><p>+994705459085</p></div>
-<div class="member"><img src="https://via.placeholder.com/200" alt="Satış"><h4>Satışçı</h4><p>Müştəri Əlaqəsi</p><p>+994775459085</p></div>
-</div>
-</section>
-
-<section class="contact" id="contact">
-<h2>Bizimlə Əlaqə</h2>
-<a href="tel:+994505459085">Zəng et</a>
-<a href="https://wa.me/994505459085" target="_blank">WhatsApp</a>
-<a href="tel:+994555459085">Zəng et</a>
-<a href="https://wa.me/994555459085" target="_blank">WhatsApp</a>
-<a href="tel:+994705459085">Zəng et</a>
-<a href="https://wa.me/994705459085" target="_blank">WhatsApp</a>
-<a href="tel:+994775459085">Zəng et</a>
-<a href="https://wa.me/994775459085" target="_blank">WhatsApp</a>
-</section>
-
-<section class="faq" id="faq">
-<h2>FAQ</h2>
-<div class="cards">
-<div class="card"><h3>Domen transferi necə aparılır?</h3><p>Domeninizi bizim sistemimizə asanlıqla köçürə bilərsiniz.</p></div>
-<div class="card"><h3>Ödəniş qaydaları nədir?</h3><p>Visa, Mastercard və yerli bank kartları ilə ödəniş mümkündür.</p></div>
-<div class="card"><h3>Texniki dəstək necə işləyir?</h3><p>Ticket sistemi vasitəsilə dəstək ala bilərsiniz.</p></div>
-</div>
-</section>
-
-<section class="blog" id="blog">
-<h2>Bloq</h2>
-<div class="cards">
-<div class="card"><h3>Sayt necə açılır?</h3><p>Yeni başlayanlar üçün addım-addım bələdçi.</p></div>
-<div class="card"><h3>SEO-nun əhəmiyyəti</h3><p>Saytınızın Google sıralamasını yüksəltmək üçün tövsiyələr.</p></div>
-</div>
-</section>
-
-<footer>
-<p>© 2026 SmartPortal Web Studio. Bütün hüquqlar qorunur.</p>
-</footer>
 
 <script>
-// Dinamik sayğaclar nümunəsi
-let sites = 128, clients=54, years=5;
-const speed=50;
-function countUp(id,val){ let n=0; const el=document.getElementById(id); let interval=setInterval(()=>{n++; el.innerText=n; if(n>=val) clearInterval(interval);}, speed);}
-countUp('sitesCount', sites);
-countUp('clientsCount', clients);
-countUp('yearsCount', years);
+// Elementləri seçirik
+const packageSelect = document.getElementById('package');
+const addons = document.querySelectorAll('.addon');
+const priority = document.getElementById('priority');
+const totalDisplay = document.getElementById('total');
+const priorityVal = document.getElementById('priorityVal');
+const orderBtn = document.getElementById('orderBtn');
+
+// Qiymət hesablaması funksiyası
+function calculateTotal() {
+    let base = parseFloat(packageSelect.value);
+    let addonsTotal = 0;
+    addons.forEach(a => { if(a.checked) addonsTotal += parseFloat(a.value); });
+    let multiplier = parseFloat(priority.value);
+    priorityVal.innerText = multiplier.toFixed(1) + "x";
+    let total = (base + addonsTotal) * multiplier;
+    totalDisplay.innerText = total.toFixed(0);
+}
+
+// Event listener-lər
+packageSelect.addEventListener('change', calculateTotal);
+addons.forEach(a => a.addEventListener('change', calculateTotal));
+priority.addEventListener('input', calculateTotal);
+
+// WhatsApp sifariş linki
+orderBtn.addEventListener('click', ()=>{
+    let total = totalDisplay.innerText;
+    let msg = `Salam! Mən SmartPortal-da sayt sifarişi etmək istəyirəm. Ümumi qiymət: ${total} AZN.`;
+    window.open(`https://wa.me/994505459085?text=${encodeURIComponent(msg)}`, '_blank');
+});
+
+// İlkin qiyməti hesablayırıq
+calculateTotal();
 </script>
 
 </body>

@@ -1,0 +1,2 @@
+# SmartPortal
+SmartPortal rəsmi

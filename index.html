@@ -1,84 +1,279 @@
-<!-- START — PRO SAYT HESABLAMA KALKULYATORU -->
-<style>
-  .calc-container {
-    max-width: 800px;
-    margin: 30px auto;
-    padding: 25px;
-    border-radius: 10px;
-    background: #fff;
-    box-shadow: 0 6px 18px rgba(0,0,0,0.1);
-    font-family: Arial, sans-serif;
-  }
-  .calc-title {
-    font-size: 28px;
-    margin-bottom: 15px;
-    text-align: center;
-    color: #222;
-  }
-  .calc-group {
-    margin-bottom: 15px;
-  }
-  .calc-group label {
-    font-size: 16px;
-    display: block;
-    margin-bottom: 5px;
-    color: #444;
-  }
-  .calc-group input[type="checkbox"] {
-    margin-right: 8px;
-  }
-  .calc-group input,
-  .calc-group select {
-    width: 100%;
-    padding: 8px;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-  }
-  .calc-total {
-    font-size: 32px;
-    text-align: center;
-    padding: 15px;
-    margin-top: 20px;
-    background: #0a86ff;
-    color: #fff;
-    border-radius: 8px;
-    font-weight: bold;
-  }
-</style>
+<!DOCTYPE html>
+<html lang="az">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartPortal | Qiymət Kalkulyatoru</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #8e44ad;
+            --secondary: #f3e5f5;
+            --dark: #2c3e50;
+            --light: #ffffff;
+            --accent: #9b59b6;
+        }
 
-<div class="calc-container">
-  <div class="calc-title">Sayt Hazırlanma Qiymət Hesablayıcısı</div>
-  
-  <div class="calc-group">
-    <label><input type="checkbox" class="option-checkbox" data-price="1500"> Sadə sayt (statik)</label>
-    <label><input type="checkbox" class="option-checkbox" data-price="1500"> Admin panel</label>
-    <label><input type="checkbox" class="option-checkbox" data-price="1800"> Ödəniş inteqrasiyası</label>
-    <label><input type="checkbox" class="option-checkbox" data-price="3000"> E‑ticaret / Marketplace</label>
-    <label><input type="checkbox" class="option-checkbox" data-price="800"> Multi‑dil dəstəyi</label>
-    <label><input type="checkbox" class="option-checkbox" data-price="700"> Mobil optimizasiya</label>
-    <label><input type="checkbox" class="option-checkbox" data-price="500"> SEO optimizasiya</label>
-    <label><input type="checkbox" class="option-checkbox" data-price="1000"> Filtr + kateqoriya sistemi</label>
-    <label><input type="checkbox" class="option-checkbox" data-price="600"> Cloudinary / media sistemi</label>
-    <label><input type="checkbox" class="option-checkbox" data-price="500"> Email notifications</label>
-  </div>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 20px;
+            color: var(--dark);
+        }
 
-  <div class="calc-total" id="calcTotal">Ümumi Qiymət: 0 AZN</div>
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: var(--light);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.05);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 { color: var(--primary); font-size: 28px; }
+
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 18px;
+            font-weight: bold;
+            margin: 30px 0 15px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid var(--secondary);
+        }
+
+        /* Qrid Sistemi */
+        .grid-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 12px;
+        }
+
+        .option-card {
+            border: 1px solid #ddd;
+            padding: 15px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: 0.3s;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #fff;
+        }
+
+        .option-card:hover { border-color: var(--primary); background: var(--secondary); }
+
+        .option-card.selected {
+            border-color: var(--primary);
+            background: var(--secondary);
+            box-shadow: 0 0 0 2px var(--primary);
+        }
+
+        .option-card input { display: none; }
+
+        .info span { display: block; font-size: 14px; }
+        .price { font-weight: bold; color: var(--primary); font-size: 13px; }
+
+        /* Slayder */
+        .slider-box {
+            padding: 20px;
+            background: var(--secondary);
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            accent-color: var(--primary);
+        }
+
+        /* Qiymət Xülasəsi Paneli */
+        .summary-panel {
+            margin-top: 40px;
+            padding: 25px;
+            background: #fdfaff;
+            border: 2px dashed var(--primary);
+            border-radius: 15px;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 15px;
+        }
+
+        .total-box {
+            text-align: center;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 2px solid var(--secondary);
+        }
+
+        .grand-total {
+            font-size: 42px;
+            font-weight: 900;
+            color: var(--primary);
+        }
+
+        .btn-main {
+            display: block;
+            width: 100%;
+            padding: 18px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        .btn-main:hover { background: var(--accent); }
+
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h1>SmartPortal Layihə Kalkulyatoru</h1>
+        <p>Ehtiyaclarınıza uyğun dəqiq qiyməti hesablayın</p>
+    </div>
+
+    <div class="section-title"><i class="fas fa-layer-group"></i> Xidmət Növü</div>
+    <div class="grid-options">
+        <label class="option-card selected">
+            <input type="radio" name="serviceType" value="500" checked onchange="calc()">
+            <div class="info"><span>Veb Sayt</span><span class="price">500 AZN-dən</span></div>
+        </label>
+        <label class="option-card">
+            <input type="radio" name="serviceType" value="1200" onchange="calc()">
+            <div class="info"><span>E-ticarət</span><span class="price">1200 AZN-dən</span></div>
+        </label>
+        <label class="option-card">
+            <input type="radio" name="serviceType" value="3500" onchange="calc()">
+            <div class="info"><span>Mobil Tətbiq</span><span class="price">3500 AZN-dən</span></div>
+        </label>
+    </div>
+
+    <div class="section-title"><i class="fas fa-file-alt"></i> Sayt Detalları</div>
+    <div class="slider-box">
+        <label>Səhifə Sayı: <b id="pageCountLabel">5</b></label>
+        <input type="range" id="pageRange" min="1" max="50" value="5" oninput="calc()">
+    </div>
+
+    <div class="grid-options">
+        <label class="option-card">
+            <input type="radio" name="design" value="1" checked onchange="calc()">
+            <div class="info"><span>Sada Dizayn</span><span class="price">x1.0</span></div>
+        </label>
+        <label class="option-card">
+            <input type="radio" name="design" value="1.3" onchange="calc()">
+            <div class="info"><span>Peşəkar</span><span class="price">x1.3</span></div>
+        </label>
+    </div>
+
+    <div class="section-title"><i class="fas fa-plus-circle"></i> Veb Sayt Əlavələri</div>
+    <div class="grid-options">
+        <label class="option-card">
+            <input type="checkbox" class="extra" value="50" onchange="calc()">
+            <div class="info"><span>Əlaqə Forması</span><span class="price">+50 AZN</span></div>
+        </label>
+        <label class="option-card">
+            <input type="checkbox" class="extra" value="150" onchange="calc()">
+            <div class="info"><span>Bloq Sistemi</span><span class="price">+150 AZN</span></div>
+        </label>
+        <label class="option-card">
+            <input type="checkbox" class="extra" value="300" onchange="calc()">
+            <div class="info"><span>Çoxdillilik</span><span class="price">+300 AZN</span></div>
+        </label>
+        <label class="option-card">
+            <input type="checkbox" class="extra" value="400" onchange="calc()">
+            <div class="info"><span>Ödəniş Sistemi</span><span class="price">+400 AZN</span></div>
+        </label>
+    </div>
+
+    <div class="section-title"><i class="fas fa-clock"></i> Təslim Müddəti</div>
+    <div class="grid-options">
+        <label class="option-card">
+            <input type="radio" name="speed" value="1.5" onchange="calc()">
+            <div class="info"><span>Təcili (7 gün)</span><span class="price">x1.5</span></div>
+        </label>
+        <label class="option-card">
+            <input type="radio" name="speed" value="1" checked onchange="calc()">
+            <div class="info"><span>Standart (30 gün)</span><span class="price">x1.0</span></div>
+        </label>
+    </div>
+
+    <div class="summary-panel">
+        <div class="summary-row"><span>Baza Qiymət:</span> <span id="basePriceShow">500 AZN</span></div>
+        <div class="summary-row"><span>Səhifə/Dizayn Əlavəsi:</span> <span id="designPriceShow">0 AZN</span></div>
+        <div class="summary-row"><span>Xidmət Əlavələri:</span> <span id="extraPriceShow">0 AZN</span></div>
+        <div class="summary-row"><span>Vaxt Əmsalı:</span> <span id="speedShow">x1.0</span></div>
+        
+        <div class="total-box">
+            <p>Təxmini Qiymət</p>
+            <div class="grand-total" id="grandTotal">500 AZN</div>
+            <p style="font-size: 12px; color: #888;">* ƏDV daxil deyil</p>
+        </div>
+    </div>
+
+    <button class="btn-main"><i class="fab fa-whatsapp"></i> Pulsuz Konsultasiya Al</button>
 </div>
 
 <script>
-  const checkboxes = document.querySelectorAll('.option-checkbox');
-  const totalEl = document.getElementById('calcTotal');
+function calc() {
+    // 1. Baza Qiymət
+    let base = parseInt(document.querySelector('input[name="serviceType"]:checked').value);
+    
+    // 2. Səhifə və Dizayn (Hər səhifə 10 AZN + Dizayn əmsalı)
+    let pages = parseInt(document.getElementById('pageRange').value);
+    document.getElementById('pageCountLabel').innerText = pages;
+    let designMult = parseFloat(document.querySelector('input[name="design"]:checked').value);
+    
+    let designExtra = (pages * 10) * designMult;
 
-  function updateTotal() {
-    let total = 0;
-    checkboxes.forEach(cb => {
-      if (cb.checked) {
-        total += parseInt(cb.dataset.price);
-      }
+    // 3. Çekbokslar (Əlavələr)
+    let extraTotal = 0;
+    document.querySelectorAll('.extra:checked').forEach(el => {
+        extraTotal += parseInt(el.value);
     });
-    totalEl.textContent = `Ümumi Qiymət: ${total.toLocaleString()} AZN`;
-  }
 
-  checkboxes.forEach(cb => cb.addEventListener('change', updateTotal));
+    // 4. Sürət əmsalı
+    let speedMult = parseFloat(document.querySelector('input[name="speed"]:checked').value);
+
+    // HESABLAMA MƏNTİQİ: (Baza + Səhifə + Əlavələr) * Sürət Əmsalı
+    let final = (base + designExtra + extraTotal) * speedMult;
+
+    // UI Yeniləmə
+    document.getElementById('basePriceShow').innerText = base + " AZN";
+    document.getElementById('designPriceShow').innerText = designExtra.toFixed(0) + " AZN";
+    document.getElementById('extraPriceShow').innerText = extraTotal + " AZN";
+    document.getElementById('speedShow').innerText = "x" + speedMult;
+    document.getElementById('grandTotal').innerText = Math.round(final) + " AZN";
+
+    // Vizual olaraq seçiləni rəngləmək
+    document.querySelectorAll('.option-card').forEach(card => {
+        if(card.querySelector('input').checked) {
+            card.classList.add('selected');
+        } else {
+            card.classList.remove('selected');
+        }
+    });
+}
+
+// İlk açılışda hesabla
+calc();
 </script>
-<!-- END — PRO SAYT HESABLAMA KALKULYATORU -->
+
+</body>
+</html>

@@ -3,267 +3,287 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SmartPortal | Qiymət Kalkulyatoru</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <title>SmartPortal | Peşəkar Layihə Kalkulyatoru</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --primary: #8e44ad;
-            --secondary: #f3e5f5;
-            --dark: #2c3e50;
-            --light: #ffffff;
-            --accent: #9b59b6;
+            --primary: #6c5ce7;
+            --primary-soft: #efeeff;
+            --dark: #2d3436;
+            --text-gray: #636e72;
+            --border: #dfe6e9;
+            --white: #ffffff;
+            --shadow: 0 10px 30px rgba(108, 92, 231, 0.1);
         }
 
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f8f9fa;
+            background-color: #f0f3f7;
             margin: 0;
             padding: 20px;
             color: var(--dark);
         }
 
-        .container {
-            max-width: 900px;
+        .calc-wrapper {
+            max-width: 1000px;
             margin: 0 auto;
-            background: var(--light);
-            padding: 30px;
-            border-radius: 20px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.05);
+            background: var(--white);
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
         }
 
-        .header {
+        .hero-header {
+            background: linear-gradient(135deg, var(--primary), #a29bfe);
+            color: white;
+            padding: 40px 20px;
             text-align: center;
-            margin-bottom: 40px;
         }
 
-        .header h1 { color: var(--primary); font-size: 28px; }
-
+        .section-box { padding: 30px; border-bottom: 1px solid var(--border); }
         .section-title {
+            font-size: 20px;
+            font-weight: 800;
+            margin-bottom: 20px;
             display: flex;
             align-items: center;
             gap: 10px;
-            font-size: 18px;
-            font-weight: bold;
-            margin: 30px 0 15px;
-            padding-bottom: 8px;
-            border-bottom: 2px solid var(--secondary);
+            color: var(--primary);
         }
 
-        /* Qrid Sistemi */
-        .grid-options {
+        /* Grid Layouts */
+        .options-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 12px;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 15px;
         }
 
-        .option-card {
-            border: 1px solid #ddd;
-            padding: 15px;
+        .card {
+            border: 1.5px solid var(--border);
             border-radius: 12px;
+            padding: 15px;
             cursor: pointer;
-            transition: 0.3s;
+            transition: all 0.2s ease;
+            position: relative;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: #fff;
         }
 
-        .option-card:hover { border-color: var(--primary); background: var(--secondary); }
-
-        .option-card.selected {
+        .card:hover { border-color: var(--primary); background: var(--primary-soft); }
+        .card.selected {
             border-color: var(--primary);
-            background: var(--secondary);
+            background: var(--primary-soft);
             box-shadow: 0 0 0 2px var(--primary);
         }
 
-        .option-card input { display: none; }
+        .card input { position: absolute; opacity: 0; }
+        .card .label-text { font-size: 14px; font-weight: 600; }
+        .card .price-tag { font-size: 12px; color: var(--primary); font-weight: bold; }
 
-        .info span { display: block; font-size: 14px; }
-        .price { font-weight: bold; color: var(--primary); font-size: 13px; }
-
-        /* Slayder */
-        .slider-box {
-            padding: 20px;
-            background: var(--secondary);
-            border-radius: 12px;
-            margin-bottom: 20px;
+        /* Sliders */
+        .slider-container {
+            background: var(--primary-soft);
+            padding: 25px;
+            border-radius: 15px;
+            margin: 15px 0;
         }
 
         input[type="range"] {
             width: 100%;
+            height: 8px;
+            border-radius: 5px;
             accent-color: var(--primary);
         }
 
-        /* Qiymət Xülasəsi Paneli */
-        .summary-panel {
-            margin-top: 40px;
-            padding: 25px;
-            background: #fdfaff;
-            border: 2px dashed var(--primary);
-            border-radius: 15px;
+        /* Summary Panel */
+        .summary-sticky {
+            background: #f9f9ff;
+            padding: 30px;
+            border-top: 3px solid var(--primary);
         }
 
-        .summary-row {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 10px;
-            font-size: 15px;
-        }
+        .summary-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+        .summary-table td { padding: 10px 0; border-bottom: 1px solid #eee; font-size: 14px; }
+        .summary-table td:last-child { text-align: right; font-weight: bold; }
 
-        .total-box {
+        .final-price-area {
             text-align: center;
-            margin-top: 20px;
-            padding-top: 20px;
-            border-top: 2px solid var(--secondary);
+            padding: 20px;
         }
 
         .grand-total {
-            font-size: 42px;
+            font-size: 48px;
             font-weight: 900;
             color: var(--primary);
+            margin: 10px 0;
         }
 
-        .btn-main {
-            display: block;
-            width: 100%;
+        .btn-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .btn {
             padding: 18px;
-            background: var(--primary);
-            color: white;
-            border: none;
             border-radius: 12px;
-            font-size: 18px;
+            border: none;
             font-weight: bold;
             cursor: pointer;
-            margin-top: 20px;
+            font-size: 16px;
+            transition: 0.3s;
         }
 
-        .btn-main:hover { background: var(--accent); }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-outline { background: #fff; border: 2px solid var(--primary); color: var(--primary); }
+        .btn:hover { transform: translateY(-3px); opacity: 0.9; }
 
+        @media (max-width: 768px) {
+            .btn-group { grid-template-columns: 1fr; }
+        }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <div class="header">
+<div class="calc-wrapper">
+    <div class="hero-header">
         <h1>SmartPortal Layihə Kalkulyatoru</h1>
-        <p>Ehtiyaclarınıza uyğun dəqiq qiyməti hesablayın</p>
+        <p>Ehtiyaclarınıza uyğun bütün seçimləri edin və dəqiq büdcəni görün.</p>
     </div>
 
-    <div class="section-title"><i class="fas fa-layer-group"></i> Xidmət Növü</div>
-    <div class="grid-options">
-        <label class="option-card selected">
-            <input type="radio" name="serviceType" value="500" checked onchange="calc()">
-            <div class="info"><span>Veb Sayt</span><span class="price">500 AZN-dən</span></div>
-        </label>
-        <label class="option-card">
-            <input type="radio" name="serviceType" value="1200" onchange="calc()">
-            <div class="info"><span>E-ticarət</span><span class="price">1200 AZN-dən</span></div>
-        </label>
-        <label class="option-card">
-            <input type="radio" name="serviceType" value="3500" onchange="calc()">
-            <div class="info"><span>Mobil Tətbiq</span><span class="price">3500 AZN-dən</span></div>
-        </label>
-    </div>
-
-    <div class="section-title"><i class="fas fa-file-alt"></i> Sayt Detalları</div>
-    <div class="slider-box">
-        <label>Səhifə Sayı: <b id="pageCountLabel">5</b></label>
-        <input type="range" id="pageRange" min="1" max="50" value="5" oninput="calc()">
-    </div>
-
-    <div class="grid-options">
-        <label class="option-card">
-            <input type="radio" name="design" value="1" checked onchange="calc()">
-            <div class="info"><span>Sada Dizayn</span><span class="price">x1.0</span></div>
-        </label>
-        <label class="option-card">
-            <input type="radio" name="design" value="1.3" onchange="calc()">
-            <div class="info"><span>Peşəkar</span><span class="price">x1.3</span></div>
-        </label>
-    </div>
-
-    <div class="section-title"><i class="fas fa-plus-circle"></i> Veb Sayt Əlavələri</div>
-    <div class="grid-options">
-        <label class="option-card">
-            <input type="checkbox" class="extra" value="50" onchange="calc()">
-            <div class="info"><span>Əlaqə Forması</span><span class="price">+50 AZN</span></div>
-        </label>
-        <label class="option-card">
-            <input type="checkbox" class="extra" value="150" onchange="calc()">
-            <div class="info"><span>Bloq Sistemi</span><span class="price">+150 AZN</span></div>
-        </label>
-        <label class="option-card">
-            <input type="checkbox" class="extra" value="300" onchange="calc()">
-            <div class="info"><span>Çoxdillilik</span><span class="price">+300 AZN</span></div>
-        </label>
-        <label class="option-card">
-            <input type="checkbox" class="extra" value="400" onchange="calc()">
-            <div class="info"><span>Ödəniş Sistemi</span><span class="price">+400 AZN</span></div>
-        </label>
-    </div>
-
-    <div class="section-title"><i class="fas fa-clock"></i> Təslim Müddəti</div>
-    <div class="grid-options">
-        <label class="option-card">
-            <input type="radio" name="speed" value="1.5" onchange="calc()">
-            <div class="info"><span>Təcili (7 gün)</span><span class="price">x1.5</span></div>
-        </label>
-        <label class="option-card">
-            <input type="radio" name="speed" value="1" checked onchange="calc()">
-            <div class="info"><span>Standart (30 gün)</span><span class="price">x1.0</span></div>
-        </label>
-    </div>
-
-    <div class="summary-panel">
-        <div class="summary-row"><span>Baza Qiymət:</span> <span id="basePriceShow">500 AZN</span></div>
-        <div class="summary-row"><span>Səhifə/Dizayn Əlavəsi:</span> <span id="designPriceShow">0 AZN</span></div>
-        <div class="summary-row"><span>Xidmət Əlavələri:</span> <span id="extraPriceShow">0 AZN</span></div>
-        <div class="summary-row"><span>Vaxt Əmsalı:</span> <span id="speedShow">x1.0</span></div>
-        
-        <div class="total-box">
-            <p>Təxmini Qiymət</p>
-            <div class="grand-total" id="grandTotal">500 AZN</div>
-            <p style="font-size: 12px; color: #888;">* ƏDV daxil deyil</p>
+    <div class="section-box">
+        <div class="section-title"><i class="fas fa-rocket"></i> Xidmət Növü</div>
+        <div class="options-grid">
+            <label class="card selected"><input type="radio" name="mainType" value="400" checked onchange="update()"> <div class="label-text">Veb Sayt</div> <div class="price-tag">400 AZN-dən</div></label>
+            <label class="card"><input type="radio" name="mainType" value="1200" onchange="update()"> <div class="label-text">E-ticarət</div> <div class="price-tag">1200 AZN-dən</div></label>
+            <label class="card"><input type="radio" name="mainType" value="3500" onchange="update()"> <div class="label-text">Mobil Tətbiq</div> <div class="price-tag">3500 AZN-dən</div></label>
+            <label class="card"><input type="radio" name="mainType" value="5000" onchange="update()"> <div class="label-text">Xüsusi Sistem</div> <div class="price-tag">5000 AZN-dən</div></label>
         </div>
     </div>
 
-    <button class="btn-main"><i class="fab fa-whatsapp"></i> Pulsuz Konsultasiya Al</button>
+    <div class="section-box">
+        <div class="section-title"><i class="fas fa-sliders-h"></i> Sayt Detalları</div>
+        <div class="slider-container">
+            <label>Səhifə Sayı: <b id="pageVal">5</b></label>
+            <input type="range" id="pages" min="1" max="50" value="5" oninput="update()">
+        </div>
+        <p style="font-size: 14px; margin-bottom: 10px;">Dizayn Mürəkkəbliyi:</p>
+        <div class="options-grid">
+            <label class="card selected"><input type="radio" name="design" value="1" checked onchange="update()"> <div class="label-text">Sadə</div> <div class="price-tag">x1.0</div></label>
+            <label class="card"><input type="radio" name="design" value="1.3" onchange="update()"> <div class="label-text">Peşəkar</div> <div class="price-tag">x1.3</div></label>
+            <label class="card"><input type="radio" name="design" value="1.6" onchange="update()"> <div class="label-text">Xüsusi</div> <div class="price-tag">x1.6</div></label>
+        </div>
+    </div>
+
+    <div class="section-box">
+        <div class="section-title"><i class="fas fa-puzzle-piece"></i> Veb Sayt Əlavələri</div>
+        <div class="options-grid">
+            <label class="card"><input type="checkbox" class="addon" value="50" onchange="update()"> <div class="label-text">Əlaqə Forması</div> <div class="price-tag">+50</div></label>
+            <label class="card"><input type="checkbox" class="addon" value="100" onchange="update()"> <div class="label-text">Qalereya / Portfolio</div> <div class="price-tag">+100</div></label>
+            <label class="card"><input type="checkbox" class="addon" value="150" onchange="update()"> <div class="label-text">Bloq Sistemi</div> <div class="price-tag">+150</div></label>
+            <label class="card"><input type="checkbox" class="addon" value="200" onchange="update()"> <div class="label-text">Admin Panel</div> <div class="price-tag">+200</div></label>
+            <label class="card"><input type="checkbox" class="addon" value="300" onchange="update()"> <div class="label-text">Çoxdillilik (AZ/RU/EN)</div> <div class="price-tag">+300</div></label>
+            <label class="card"><input type="checkbox" class="addon" value="150" onchange="update()"> <div class="label-text">Canlı Söhbət</div> <div class="price-tag">+150</div></label>
+            <label class="card"><input type="checkbox" class="addon" value="100" onchange="update()"> <div class="label-text">WhatsApp İnteqrasiya</div> <div class="price-tag">+100</div></label>
+            <label class="card"><input type="checkbox" class="addon" value="250" onchange="update()"> <div class="label-text">Üzv Girişi</div> <div class="price-tag">+250</div></label>
+        </div>
+    </div>
+
+    <div class="section-box">
+        <div class="section-title"><i class="fas fa-shopping-cart"></i> E-ticarət Funksiyaları</div>
+        <div class="options-grid">
+            <label class="card"><input type="checkbox" class="addon" value="200" onchange="update()"> <div class="label-text">Səbət Sistemi</div> <div class="price-tag">+200</div></label>
+            <label class="card"><input type="checkbox" class="addon" value="400" onchange="update()"> <div class="label-text">Yerli Bank Ödənişi</div> <div class="price-tag">+400</div></label>
+            <label class="card"><input type="checkbox" class="addon" value="300" onchange="update()"> <div class="label-text">Məhsul İdarəetməsi</div> <div class="price-tag">+300</div></label>
+            <label class="card"><input type="checkbox" class="addon" value="150" onchange="update()"> <div class="label-text">Kupon/Endirim Kodları</div> <div class="price-tag">+150</div></label>
+        </div>
+    </div>
+
+    <div class="section-box">
+        <div class="section-title"><i class="fas fa-search"></i> SEO Optimizasiya</div>
+        <div class="options-grid">
+            <label class="card"><input type="checkbox" class="addon" value="150" onchange="update()"> <div class="label-text">Səhifədaxili SEO</div> <div class="price-tag">+150</div></label>
+            <label class="card"><input type="checkbox" class="addon" value="100" onchange="update()"> <div class="label-text">Google Analytics</div> <div class="price-tag">+100</div></label>
+            <label class="card"><input type="checkbox" class="addon" value="200" onchange="update()"> <div class="label-text">Açar Söz Tədqiqatı</div> <div class="price-tag">+200</div></label>
+            <label class="card"><input type="checkbox" class="addon" value="300" onchange="update()"> <div class="label-text">Lokal SEO Paketi</div> <div class="price-tag">+300</div></label>
+        </div>
+    </div>
+
+    <div class="section-box">
+        <div class="section-title"><i class="fas fa-paint-brush"></i> Loqo və Çatdırılma</div>
+        <p>Loqo Dizaynı:</p>
+        <div class="options-grid" style="margin-bottom: 20px;">
+            <label class="card selected"><input type="radio" name="logo" value="0" checked onchange="update()"> <div class="label-text">Ehtiyac Yoxdur</div> <div class="price-tag">0 AZN</div></label>
+            <label class="card"><input type="radio" name="logo" value="80" onchange="update()"> <div class="label-text">Əsas (Süni İntellekt)</div> <div class="price-tag">+80</div></label>
+            <label class="card"><input type="radio" name="logo" value="250" onchange="update()"> <div class="label-text">Peşəkar (3 konsept)</div> <div class="price-tag">+250</div></label>
+        </div>
+        <p>Çatdırılma Müddəti:</p>
+        <div class="options-grid">
+            <label class="card"><input type="radio" name="speed" value="1.5" onchange="update()"> <div class="label-text">Təcili (7 gün)</div> <div class="price-tag">x1.5</div></label>
+            <label class="card selected"><input type="radio" name="speed" value="1" checked onchange="update()"> <div class="label-text">Standart (30 gün)</div> <div class="price-tag">x1.0</div></label>
+            <label class="card"><input type="radio" name="speed" value="0.9" onchange="update()"> <div class="label-text">Büdcə (60 gün)</div> <div class="price-tag">x0.9</div></label>
+        </div>
+    </div>
+
+    <div class="summary-sticky">
+        <div class="section-title"><i class="fas fa-receipt"></i> Qiymət Xülasəsi</div>
+        <table class="summary-table">
+            <tr><td>Əsas Xidmət</td> <td id="res-base">400 AZN</td></tr>
+            <tr><td>Səhifə və Dizayn Əlavəsi</td> <td id="res-design">0 AZN</td></tr>
+            <tr><td>Funksional Əlavələr</td> <td id="res-addons">0 AZN</td></tr>
+            <tr><td>Loqo Dizaynı</td> <td id="res-logo">0 AZN</td></tr>
+            <tr><td>Müddət Əmsalı</td> <td id="res-speed">x1.0</td></tr>
+        </table>
+
+        <div class="final-price-area">
+            <p>Təxmini Layihə Qiyməti:</p>
+            <div class="grand-total" id="grandTotal">400 AZN</div>
+            <p style="color: var(--text-gray); font-size: 12px;">Qiymətə texniki dəstək daxil deyil.</p>
+        </div>
+
+        <div class="btn-group">
+            <button class="btn btn-outline"><i class="fas fa-file-pdf"></i> PDF Yüklə</button>
+            <button class="btn btn-primary"><i class="fab fa-whatsapp"></i> WhatsApp ilə Sifariş Et</button>
+        </div>
+    </div>
 </div>
 
 <script>
-function calc() {
-    // 1. Baza Qiymət
-    let base = parseInt(document.querySelector('input[name="serviceType"]:checked').value);
-    
-    // 2. Səhifə və Dizayn (Hər səhifə 10 AZN + Dizayn əmsalı)
-    let pages = parseInt(document.getElementById('pageRange').value);
-    document.getElementById('pageCountLabel').innerText = pages;
-    let designMult = parseFloat(document.querySelector('input[name="design"]:checked').value);
-    
-    let designExtra = (pages * 10) * designMult;
+function update() {
+    // 1. Inputs
+    const basePrice = parseInt(document.querySelector('input[name="mainType"]:checked').value);
+    const pages = parseInt(document.getElementById('pages').value);
+    const designMult = parseFloat(document.querySelector('input[name="design"]:checked').value);
+    const logoPrice = parseInt(document.querySelector('input[name="logo"]:checked').value);
+    const speedMult = parseFloat(document.querySelector('input[name="speed"]:checked').value);
 
-    // 3. Çekbokslar (Əlavələr)
-    let extraTotal = 0;
-    document.querySelectorAll('.extra:checked').forEach(el => {
-        extraTotal += parseInt(el.value);
+    // 2. Addons calculation
+    let addonsSum = 0;
+    document.querySelectorAll('.addon:checked').forEach(cb => {
+        addonsSum += parseInt(cb.value);
     });
 
-    // 4. Sürət əmsalı
-    let speedMult = parseFloat(document.querySelector('input[name="speed"]:checked').value);
+    // 3. Page Calculation
+    let designExtra = (pages * 15) * designMult;
 
-    // HESABLAMA MƏNTİQİ: (Baza + Səhifə + Əlavələr) * Sürət Əmsalı
-    let final = (base + designExtra + extraTotal) * speedMult;
+    // 4. Final Math
+    let subTotal = basePrice + designExtra + addonsSum + logoPrice;
+    let finalTotal = subTotal * speedMult;
 
-    // UI Yeniləmə
-    document.getElementById('basePriceShow').innerText = base + " AZN";
-    document.getElementById('designPriceShow').innerText = designExtra.toFixed(0) + " AZN";
-    document.getElementById('extraPriceShow').innerText = extraTotal + " AZN";
-    document.getElementById('speedShow').innerText = "x" + speedMult;
-    document.getElementById('grandTotal').innerText = Math.round(final) + " AZN";
+    // 5. Update UI
+    document.getElementById('pageVal').innerText = pages;
+    document.getElementById('res-base').innerText = basePrice + " AZN";
+    document.getElementById('res-design').innerText = Math.round(designExtra) + " AZN";
+    document.getElementById('res-addons').innerText = addonsSum + " AZN";
+    document.getElementById('res-logo').innerText = logoPrice + " AZN";
+    document.getElementById('res-speed').innerText = "x" + speedMult;
+    document.getElementById('grandTotal').innerText = Math.round(finalTotal) + " ₼";
 
-    // Vizual olaraq seçiləni rəngləmək
-    document.querySelectorAll('.option-card').forEach(card => {
-        if(card.querySelector('input').checked) {
+    // Card Selection Visuals
+    document.querySelectorAll('.card').forEach(card => {
+        if(card.querySelector('input').checked || card.querySelector('input').type === 'checkbox' && card.querySelector('input').checked) {
             card.classList.add('selected');
         } else {
             card.classList.remove('selected');
@@ -271,8 +291,8 @@ function calc() {
     });
 }
 
-// İlk açılışda hesabla
-calc();
+// Initial Call
+update();
 </script>
 
 </body>

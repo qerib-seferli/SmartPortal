@@ -1,5 +1,5 @@
 // Bu service worker GLOBAL PRO PWA shell, portal və admin fayllarını offline cache üçün saxlayır.
-const CACHE = "smartportal-global-pro-v2";
+const CACHE = "smartportal-global-pro-v3";
 const FILES = [
   "../index.html",
   "../admin.html",

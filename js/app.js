@@ -7,10 +7,10 @@ let state = loadState();
 const $ = (selector) => document.querySelector(selector);
 
 const uiText = {
-  az: { selected: "Seçilmiş modul", complexity: "Komplekslik", breadth: "Scope genişliyi", delivery: "Təhvil", profit: "Mənfəət", days: "iş günü", platformHint: "Ana platforma tipini seçin.", groupHint: "seçim: lazım olan hər şeyi seçə bilərsiniz.", sending: "Lead göndərilir...", sent: "Lead Supabase CRM bazasına əlavə olundu.", demo: "Demo yaddaşa əlavə olundu." },
-  en: { selected: "Selected modules", complexity: "Complexity", breadth: "Scope breadth", delivery: "Delivery", profit: "Profit", days: "business days", platformHint: "Choose the main platform type.", groupHint: "options: select everything you need.", sending: "Sending lead...", sent: "Lead was added to Supabase CRM.", demo: "Added to demo storage." },
-  tr: { selected: "Seçilen modül", complexity: "Karmaşıklık", breadth: "Scope genişliği", delivery: "Teslim", profit: "Kâr", days: "iş günü", platformHint: "Ana platform tipini seçin.", groupHint: "seçenek: ihtiyacınız olan her şeyi seçin.", sending: "Lead gönderiliyor...", sent: "Lead Supabase CRM'e eklendi.", demo: "Demo hafızaya eklendi." },
-  ru: { selected: "Выбранные модули", complexity: "Сложность", breadth: "Ширина scope", delivery: "Срок", profit: "Прибыль", days: "рабочих дней", platformHint: "Выберите тип платформы.", groupHint: "опций: выберите все нужное.", sending: "Отправка лида...", sent: "Лид добавлен в Supabase CRM.", demo: "Добавлено в demo storage." }
+  az: { selected: "Seçilmiş modul", complexity: "Komplekslik", breadth: "Scope genişliyi", delivery: "Təhvil", profit: "Mənfəət", days: "iş günü", platformHint: "Ana platforma tipini seçin.", groupHint: "seçim: lazım olan hər şeyi seçə bilərsiniz.", sending: "Lead göndərilir...", sent: "Lead Supabase CRM bazasına əlavə olundu.", demo: "Demo yaddaşa əlavə olundu.", name: "Ad Soyad", company: "Şirkət", phone: "Telefon", industry: "Sahə", notes: "Əlavə qeyd" },
+  en: { selected: "Selected modules", complexity: "Complexity", breadth: "Scope breadth", delivery: "Delivery", profit: "Profit", days: "business days", platformHint: "Choose the main platform type.", groupHint: "options: select everything you need.", sending: "Sending lead...", sent: "Lead was added to Supabase CRM.", demo: "Added to demo storage.", name: "Full name", company: "Company", phone: "Phone", industry: "Industry", notes: "Notes" },
+  tr: { selected: "Seçilen modül", complexity: "Karmaşıklık", breadth: "Scope genişliği", delivery: "Teslim", profit: "Kâr", days: "iş günü", platformHint: "Ana platform tipini seçin.", groupHint: "seçenek: ihtiyacınız olan her şeyi seçin.", sending: "Lead gönderiliyor...", sent: "Lead Supabase CRM'e eklendi.", demo: "Demo hafızaya eklendi.", name: "Ad Soyad", company: "Şirket", phone: "Telefon", industry: "Sektör", notes: "Notlar" },
+  ru: { selected: "Выбранные модули", complexity: "Сложность", breadth: "Ширина scope", delivery: "Срок", profit: "Прибыль", days: "рабочих дней", platformHint: "Выберите тип платформы.", groupHint: "опций: выберите все нужное.", sending: "Отправка лида...", sent: "Лид добавлен в Supabase CRM.", demo: "Добавлено в demo storage.", name: "Имя", company: "Компания", phone: "Телефон", industry: "Сфера", notes: "Комментарий" }
 };
 
 function ui(key) {
@@ -93,6 +93,11 @@ function renderSummary() {
   if (total) total.textContent = money(metrics.total, state.currency);
   if (score) score.style.setProperty("--value", `${metrics.score}%`);
   if (payloadNode) payloadNode.value = JSON.stringify(payload(state), null, 2);
+  const notes = document.querySelector("[name='notes']");
+  if (notes && !notes.dataset.touched) {
+    const scope = metrics.items.map((item) => `- ${item.title}`).join("\n");
+    notes.value = scope ? `Seçilənlər:\n${scope}` : "";
+  }
   if (!summary) return;
   summary.innerHTML = `
     <div class="summary-row"><span>${ui("selected")}</span><strong>${metrics.items.length}</strong></div>
@@ -105,6 +110,14 @@ function renderSummary() {
     <div class="summary-row"><span>${ui("profit")}</span><strong>${money(metrics.profit, state.currency)} · ${metrics.margin}%</strong></div>
     <div class="summary-row"><span>Lead score</span><strong>${metrics.score}/100</strong></div>
   `;
+}
+
+function renderPlaceholders() {
+  const map = { name: "name", company: "company", phone: "phone", industry: "industry", notes: "notes" };
+  Object.entries(map).forEach(([name, key]) => {
+    const node = document.querySelector(`[name='${name}']`);
+    if (node) node.placeholder = ui(key);
+  });
 }
 
 function addCustom() {
@@ -176,6 +189,10 @@ function bind() {
     applyLanguage(state.lang);
     renderAll();
   });
+
+  document.addEventListener("input", (event) => {
+    if (event.target.matches("[name='notes']")) event.target.dataset.touched = "true";
+  });
 }
 
 function renderAll() {
@@ -183,6 +200,7 @@ function renderAll() {
   renderGroups();
   renderOptions();
   renderSummary();
+  renderPlaceholders();
 }
 
 document.addEventListener("DOMContentLoaded", async () => {

@@ -37,21 +37,33 @@
             <div class="stats" data-stats></div>
           </div>
           <aside class="stage glass">
-            <div class="orbit"></div>
-            <div class="orbit two"></div>
-            <pre class="code-wall">const studio = new SeniorFullStackDeveloper({
+            <div class="code-terminal">
+              <div class="terminal-top"><span></span><span></span><span></span><strong>deploy.log</strong></div>
+              <pre class="code-stream">const studio = new SeniorFullStackDeveloper({
   market: "global",
   languages: 12,
   currencies: 10,
-  modules: "480+",
+  modules: "975+",
   crm: true,
   erp: true,
   clientPortal: true,
   pushReminders: true
 });
 
-await studio.launch("world-class");
-await clients.say("wow");</pre>
+await auth.enable(["login", "signup", "reset"]);
+await pricing.loadMatrix("global-pro");
+await crm.createLead(payload);
+await portal.syncDomains(clientId);
+await billing.scheduleRenewals();
+await notifications.push("payment_due");
+await dashboard.refresh("admin");
+await studio.deploy("production");
+
+// building components...
+// syncing Supabase policies...
+// optimizing UI density...
+// ready.</pre>
+            </div>
             <div class="developer-card glass">
               <div class="avatar">FS</div>
               <h2>Full Stack Command Center</h2>

@@ -10,21 +10,21 @@
     <div class="shell">
       <header class="topbar">
         <a class="brand" href="index.html"><img src="public/assets/icon.svg" alt=""><span>Client Portal</span></a>
-        <nav class="nav"><a class="btn" href="index.html">Ana səhifə</a><a class="btn" href="auth.html">Daxil ol</a><button class="btn" type="button" data-sign-out>Çıxış</button><a class="btn primary" href="admin.html">Admin</a></nav>
+        <nav class="nav"><a class="btn" href="index.html" data-portal-i18n="home">Ana səhifə</a><a class="btn" href="auth.html" data-portal-i18n="login">Daxil ol</a><button class="btn" type="button" data-sign-out data-portal-i18n="logout">Çıxış</button><a class="btn primary" href="admin.html">Admin</a></nav>
       </header>
       <main>
         <section class="section">
           <div class="section-head">
-            <div><p class="eyebrow">Müştəri kabineti</p><h1 class="portal-title">Layihə məlumatları</h1></div>
-            <button class="btn hot" type="button" data-portal-push>Push xatırlatma test et</button>
+            <div><p class="eyebrow" data-portal-i18n="eyebrow">Müştəri kabineti</p><h1 class="portal-title" data-portal-i18n="title">Layihə məlumatları</h1></div>
+            <button class="btn hot" type="button" data-portal-push data-portal-i18n="push">Push xatırlatma test et</button>
           </div>
           <div class="portal-grid">
-            <article class="panel glass"><h2>🌐 Domain və SSL</h2><div class="list" data-domains></div></article>
-            <article class="panel glass"><h2>✉️ Email ünvanları</h2><div class="list" data-emails></div></article>
-            <article class="panel glass"><h2>💳 Ödənişlər</h2><div class="list" data-payments></div></article>
-            <article class="panel glass"><h2>🚀 Layihələr</h2><div class="list" data-projects></div></article>
-            <article class="panel glass"><h2>🎫 Support</h2><div class="list"><div class="list-item"><strong>Yeni ticket</strong><p class="muted">Dəyişiklik və texniki dəstək.</p></div></div></article>
-            <article class="panel glass"><h2>📄 Sənədlər</h2><div class="list"><div class="list-item"><strong>Vault</strong><p class="muted">Müqavilə, invoice və təhvil faylları.</p></div></div></article>
+            <article class="panel glass"><h2 data-portal-i18n="domains">🌐 Domain və SSL</h2><div class="list" data-domains></div></article>
+            <article class="panel glass"><h2 data-portal-i18n="emails">✉️ Email ünvanları</h2><div class="list" data-emails></div></article>
+            <article class="panel glass"><h2 data-portal-i18n="payments">💳 Ödənişlər</h2><div class="list" data-payments></div></article>
+            <article class="panel glass"><h2 data-portal-i18n="projects">🚀 Layihələr</h2><div class="list" data-projects></div></article>
+            <article class="panel glass"><h2>🎫 Support</h2><div class="list"><div class="list-item"><strong data-portal-i18n="ticket">Yeni ticket</strong><p class="muted" data-portal-i18n="ticketText">Dəyişiklik və texniki dəstək.</p></div></div></article>
+            <article class="panel glass"><h2 data-portal-i18n="docs">📄 Sənədlər</h2><div class="list"><div class="list-item"><strong>Vault</strong><p class="muted" data-portal-i18n="docsText">Müqavilə, invoice və təhvil faylları.</p></div></div></article>
           </div>
         </section>
       </main>

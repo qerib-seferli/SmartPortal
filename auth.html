@@ -10,37 +10,37 @@
     <div class="shell">
       <header class="topbar">
         <a class="brand" href="index.html"><img src="public/assets/icon.svg" alt=""><span>SmartPortal Auth</span></a>
-        <nav class="nav"><a class="btn" href="index.html">Ana səhifə</a><a class="btn" href="portal.html">Portal</a><a class="btn primary" href="admin.html">Admin</a></nav>
+        <nav class="nav"><a class="btn" href="index.html" data-auth-i18n="home">Ana səhifə</a><a class="btn" href="portal.html" data-auth-i18n="portal">Portal</a><a class="btn primary" href="admin.html">Admin</a></nav>
       </header>
       <main>
         <section class="auth-box glass">
-          <p class="eyebrow">Secure Client Access</p>
-          <h1 style="font-size:2.4rem">Qeydiyyat və giriş mərkəzi</h1>
+          <p class="eyebrow" data-auth-i18n="eyebrow">Secure Client Access</p>
+          <h1 data-auth-i18n="title">Qeydiyyat və giriş mərkəzi</h1>
           <div class="tabs">
-            <button class="btn" type="button" data-tab="login">Daxil ol</button>
-            <button class="btn" type="button" data-tab="register">Qeydiyyat</button>
-            <button class="btn" type="button" data-tab="forgot">Parolu unutdum</button>
-            <button class="btn" type="button" data-tab="update">Yeni parol</button>
+            <button class="btn" type="button" data-tab="login" data-auth-i18n="login">Daxil ol</button>
+            <button class="btn" type="button" data-tab="register" data-auth-i18n="register">Qeydiyyat</button>
+            <button class="btn" type="button" data-tab="forgot" data-auth-i18n="forgot">Parolu unutdum</button>
+            <button class="btn" type="button" data-tab="update" data-auth-i18n="newPassword">Yeni parol</button>
           </div>
           <form class="tab-panel" data-tab-panel="login" data-login-form>
-            <input class="field" name="email" type="email" placeholder="Email">
-            <input class="field" name="password" type="password" placeholder="Parol">
-            <button class="btn primary" type="button" data-auth-action>Portala daxil ol</button>
+            <input class="field" name="email" type="email" placeholder="Email" data-auth-placeholder="email">
+            <input class="field" name="password" type="password" placeholder="Parol" data-auth-placeholder="password">
+            <button class="btn primary" type="button" data-auth-action data-auth-i18n="loginAction">Portala daxil ol</button>
           </form>
           <form class="tab-panel" data-tab-panel="register" data-register-form>
-            <input class="field" name="fullName" placeholder="Ad Soyad">
-            <input class="field" name="company" placeholder="Şirkət">
-            <input class="field" name="email" type="email" placeholder="Email">
-            <input class="field" name="password" type="password" placeholder="Parol">
-            <button class="btn primary" type="button" data-auth-action>Hesab yarat</button>
+            <input class="field" name="fullName" placeholder="Ad Soyad" data-auth-placeholder="fullName">
+            <input class="field" name="company" placeholder="Şirkət" data-auth-placeholder="company">
+            <input class="field" name="email" type="email" placeholder="Email" data-auth-placeholder="email">
+            <input class="field" name="password" type="password" placeholder="Parol" data-auth-placeholder="password">
+            <button class="btn primary" type="button" data-auth-action data-auth-i18n="registerAction">Hesab yarat</button>
           </form>
           <form class="tab-panel" data-tab-panel="forgot" data-forgot-form>
-            <input class="field" name="email" type="email" placeholder="Email">
-            <button class="btn hot" type="button" data-auth-action>Reset link göndər</button>
+            <input class="field" name="email" type="email" placeholder="Email" data-auth-placeholder="email">
+            <button class="btn hot" type="button" data-auth-action data-auth-i18n="resetAction">Reset link göndər</button>
           </form>
           <form class="tab-panel" data-tab-panel="update" data-update-form>
-            <input class="field" name="password" type="password" placeholder="Yeni parol">
-            <button class="btn primary" type="button" data-auth-action>Parolu yenilə</button>
+            <input class="field" name="password" type="password" placeholder="Yeni parol" data-auth-placeholder="newPassword">
+            <button class="btn primary" type="button" data-auth-action data-auth-i18n="updateAction">Parolu yenilə</button>
           </form>
           <p class="muted" data-auth-notice></p>
         </section>

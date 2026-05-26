@@ -13,6 +13,25 @@ const uiText = {
   ru: { selected: "Выбранные модули", complexity: "Сложность", breadth: "Ширина scope", delivery: "Срок", profit: "Прибыль", days: "рабочих дней", platformHint: "Выберите тип платформы.", groupHint: "опций: выберите все нужное.", sending: "Отправка лида...", sent: "Лид добавлен в Supabase CRM.", demo: "Добавлено в demo storage.", name: "Имя", company: "Компания", phone: "Телефон", industry: "Сфера", notes: "Комментарий" }
 };
 
+const groupTranslations = {
+  en: {
+    platform: "Main platform", strategy: "Strategy and analysis", "ux-ui": "UI/UX system", frontend: "Frontend and motion", backend: "Backend and API", "auth-security": "Auth and security", "crm-sales": "CRM and sales", "client-portal": "Client portal", "erp-finance": "ERP and finance", ecommerce: "E-commerce", "ai-automation": "AI automation", "seo-growth": "SEO and growth", integrations: "Integrations", devops: "DevOps and performance", "content-media": "Content and media", industry: "Industry packages", advanced: "Global premium"
+  },
+  ru: {
+    platform: "Основная платформа", strategy: "Стратегия и анализ", "ux-ui": "UI/UX система", frontend: "Frontend и анимация", backend: "Backend и API", "auth-security": "Auth и безопасность", "crm-sales": "CRM и продажи", "client-portal": "Кабинет клиента", "erp-finance": "ERP и финансы", ecommerce: "E-commerce", "ai-automation": "AI автоматизация", "seo-growth": "SEO и рост", integrations: "Интеграции", devops: "DevOps и производительность", "content-media": "Контент и медиа", industry: "Пакеты отраслей", advanced: "Global premium"
+  },
+  tr: {
+    platform: "Ana platform", strategy: "Strateji ve analiz", "ux-ui": "UI/UX sistemi", frontend: "Frontend ve animasyon", backend: "Backend ve API", "auth-security": "Auth ve güvenlik", "crm-sales": "CRM ve satış", "client-portal": "Müşteri portalı", "erp-finance": "ERP ve finans", ecommerce: "E-ticaret", "ai-automation": "AI otomasyon", "seo-growth": "SEO ve growth", integrations: "Entegrasyonlar", devops: "DevOps ve performans", "content-media": "İçerik ve medya", industry: "Sektör paketleri", advanced: "Global premium"
+  },
+  fr: {
+    platform: "Plateforme", strategy: "Stratégie", "ux-ui": "UI/UX", frontend: "Frontend", backend: "Backend/API", "auth-security": "Auth sécurité", "crm-sales": "CRM ventes", "client-portal": "Portail client", "erp-finance": "ERP finance", ecommerce: "E-commerce", "ai-automation": "Automatisation IA", "seo-growth": "SEO croissance", integrations: "Intégrations", devops: "DevOps", "content-media": "Contenu média", industry: "Industries", advanced: "Global premium"
+  }
+};
+
+function groupTitle(group) {
+  return (groupTranslations[state.lang] || {})[group.id] || group.title;
+}
+
 function ui(key) {
   return (uiText[state.lang] || uiText.en)[key] || uiText.en[key] || key;
 }
@@ -54,7 +73,7 @@ function renderGroups() {
   root.innerHTML = serviceCatalog.map((group) => {
     const selected = state.selected[group.id];
     const count = Array.isArray(selected) ? selected.length : selected ? 1 : 0;
-    return `<button class="group-tab ${group.id === state.activeGroup ? "active" : ""}" data-group="${group.id}"><span>${group.icon} ${group.title}</span><strong>${count}</strong></button>`;
+    return `<button class="group-tab ${group.id === state.activeGroup ? "active" : ""}" data-group="${group.id}"><span>${group.icon} ${groupTitle(group)}</span><strong>${count}</strong></button>`;
   }).join("");
 }
 
@@ -64,7 +83,7 @@ function renderOptions() {
   const hint = $("[data-group-hint]");
   const root = $("[data-options]");
   if (!title || !hint || !root) return;
-  title.textContent = `${group.icon} ${group.title}`;
+  title.textContent = `${group.icon} ${groupTitle(group)}`;
   hint.textContent = group.type === "radio" ? ui("platformHint") : `${group.items.length} ${ui("groupHint")}`;
   root.innerHTML = group.items.map((item) => {
     const checked = group.type === "radio" ? state.selected[group.id] === item.id : (state.selected[group.id] || []).includes(item.id);

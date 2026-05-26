@@ -9,6 +9,8 @@ const FILES = [
   "../css/admin.css",
   "../data/catalog.js",
   "../js/core.js",
+  "../js/supabase-config.js",
+  "../js/supabase-client.js",
   "../js/app.js",
   "../js/admin.js",
   "../js/portal.js",

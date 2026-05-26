@@ -1,9 +1,21 @@
 // Bu fayl GLOBAL PRO ana səhifə, 480+ seçim kalkulyatoru və çoxdilli UI renderini idarə edir.
 import { currencies, delivery, languages, serviceCatalog, stats, support, tiers } from "../data/catalog.js";
-import { applyLanguage, calculate, defaultState, loadState, money, payload, requestPushDemo, saveLead, saveState, t } from "./core.js";
+import { applyCatalogOverrides, applyLanguage, calculate, defaultState, loadState, money, payload, requestPushDemo, saveLead, saveState } from "./core.js";
+import { loadCatalogOverrides, submitLeadToSupabase } from "./supabase-client.js";
 
 let state = loadState();
 const $ = (selector) => document.querySelector(selector);
+
+const uiText = {
+  az: { selected: "Seçilmiş modul", complexity: "Komplekslik", breadth: "Scope genişliyi", delivery: "Təhvil", profit: "Mənfəət", days: "iş günü", platformHint: "Ana platforma tipini seçin.", groupHint: "seçim: lazım olan hər şeyi seçə bilərsiniz.", sending: "Lead göndərilir...", sent: "Lead Supabase CRM bazasına əlavə olundu.", demo: "Demo yaddaşa əlavə olundu." },
+  en: { selected: "Selected modules", complexity: "Complexity", breadth: "Scope breadth", delivery: "Delivery", profit: "Profit", days: "business days", platformHint: "Choose the main platform type.", groupHint: "options: select everything you need.", sending: "Sending lead...", sent: "Lead was added to Supabase CRM.", demo: "Added to demo storage." },
+  tr: { selected: "Seçilen modül", complexity: "Karmaşıklık", breadth: "Scope genişliği", delivery: "Teslim", profit: "Kâr", days: "iş günü", platformHint: "Ana platform tipini seçin.", groupHint: "seçenek: ihtiyacınız olan her şeyi seçin.", sending: "Lead gönderiliyor...", sent: "Lead Supabase CRM'e eklendi.", demo: "Demo hafızaya eklendi." },
+  ru: { selected: "Выбранные модули", complexity: "Сложность", breadth: "Ширина scope", delivery: "Срок", profit: "Прибыль", days: "рабочих дней", platformHint: "Выберите тип платформы.", groupHint: "опций: выберите все нужное.", sending: "Отправка лида...", sent: "Лид добавлен в Supabase CRM.", demo: "Добавлено в demo storage." }
+};
+
+function ui(key) {
+  return (uiText[state.lang] || uiText.en)[key] || uiText.en[key] || key;
+}
 
 function renderTopControls() {
   document.querySelectorAll("[data-lang-select]").forEach((node) => {
@@ -53,7 +65,7 @@ function renderOptions() {
   const root = $("[data-options]");
   if (!title || !hint || !root) return;
   title.textContent = `${group.icon} ${group.title}`;
-  hint.textContent = group.type === "radio" ? "Ana platforma tipini seçin." : `${group.items.length} seçim: lazım olan hər şeyi seçə bilərsiniz.`;
+  hint.textContent = group.type === "radio" ? ui("platformHint") : `${group.items.length} ${ui("groupHint")}`;
   root.innerHTML = group.items.map((item) => {
     const checked = group.type === "radio" ? state.selected[group.id] === item.id : (state.selected[group.id] || []).includes(item.id);
     return `
@@ -83,14 +95,14 @@ function renderSummary() {
   if (payloadNode) payloadNode.value = JSON.stringify(payload(state), null, 2);
   if (!summary) return;
   summary.innerHTML = `
-    <div class="summary-row"><span>Seçilmiş modul</span><strong>${metrics.items.length}</strong></div>
-    <div class="summary-row"><span>Komplekslik</span><strong>x${metrics.complexity}</strong></div>
-    <div class="summary-row"><span>Scope genişliyi</span><strong>x${metrics.breadth}</strong></div>
-    <div class="summary-row"><span>Təhvil</span><strong>${metrics.deliveryDays} iş günü</strong></div>
+    <div class="summary-row"><span>${ui("selected")}</span><strong>${metrics.items.length}</strong></div>
+    <div class="summary-row"><span>${ui("complexity")}</span><strong>x${metrics.complexity}</strong></div>
+    <div class="summary-row"><span>${ui("breadth")}</span><strong>x${metrics.breadth}</strong></div>
+    <div class="summary-row"><span>${ui("delivery")}</span><strong>${metrics.deliveryDays} ${ui("days")}</strong></div>
     <div class="summary-row"><span>MRR</span><strong>${money(metrics.mrr, state.currency)}</strong></div>
     <div class="summary-row"><span>ARR</span><strong>${money(metrics.arr, state.currency)}</strong></div>
     <div class="summary-row"><span>LTV</span><strong>${money(metrics.ltv, state.currency)}</strong></div>
-    <div class="summary-row"><span>Mənfəət</span><strong>${money(metrics.profit, state.currency)} · ${metrics.margin}%</strong></div>
+    <div class="summary-row"><span>${ui("profit")}</span><strong>${money(metrics.profit, state.currency)} · ${metrics.margin}%</strong></div>
     <div class="summary-row"><span>Lead score</span><strong>${metrics.score}/100</strong></div>
   `;
 }
@@ -108,14 +120,18 @@ function addCustom() {
   renderAll();
 }
 
-function submitLead() {
+async function submitLead() {
   const form = $("[data-lead-form]");
   const notice = $("[data-notice]");
   if (!form || !notice) return;
   state.client = Object.fromEntries(new FormData(form).entries());
   saveState(state);
   saveLead(state);
-  notice.textContent = "Lead admin bazasına demo rejimdə əlavə olundu. Admin paneldə görə bilərsiniz.";
+  notice.textContent = ui("sending");
+  const result = await submitLeadToSupabase(payload(state));
+  notice.textContent = result.ok
+    ? ui("sent")
+    : `${ui("demo")} Supabase: ${result.message || "bağlantı yoxdur"}`;
   renderSummary();
 }
 
@@ -169,7 +185,8 @@ function renderAll() {
   renderSummary();
 }
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
+  applyCatalogOverrides(await loadCatalogOverrides());
   renderTopControls();
   renderStats();
   bind();

@@ -20,22 +20,27 @@
             <button class="btn" type="button" data-tab="login">Daxil ol</button>
             <button class="btn" type="button" data-tab="register">Qeydiyyat</button>
             <button class="btn" type="button" data-tab="forgot">Parolu unutdum</button>
+            <button class="btn" type="button" data-tab="update">Yeni parol</button>
           </div>
-          <form class="tab-panel" data-tab-panel="login">
-            <input class="field" type="email" placeholder="Email">
-            <input class="field" type="password" placeholder="Parol">
+          <form class="tab-panel" data-tab-panel="login" data-login-form>
+            <input class="field" name="email" type="email" placeholder="Email">
+            <input class="field" name="password" type="password" placeholder="Parol">
             <button class="btn primary" type="button" data-auth-action>Portala daxil ol</button>
           </form>
-          <form class="tab-panel" data-tab-panel="register">
-            <input class="field" placeholder="Ad Soyad">
-            <input class="field" placeholder="Şirkət">
-            <input class="field" type="email" placeholder="Email">
-            <input class="field" type="password" placeholder="Parol">
+          <form class="tab-panel" data-tab-panel="register" data-register-form>
+            <input class="field" name="fullName" placeholder="Ad Soyad">
+            <input class="field" name="company" placeholder="Şirkət">
+            <input class="field" name="email" type="email" placeholder="Email">
+            <input class="field" name="password" type="password" placeholder="Parol">
             <button class="btn primary" type="button" data-auth-action>Hesab yarat</button>
           </form>
-          <form class="tab-panel" data-tab-panel="forgot">
-            <input class="field" type="email" placeholder="Email">
+          <form class="tab-panel" data-tab-panel="forgot" data-forgot-form>
+            <input class="field" name="email" type="email" placeholder="Email">
             <button class="btn hot" type="button" data-auth-action>Reset link göndər</button>
+          </form>
+          <form class="tab-panel" data-tab-panel="update" data-update-form>
+            <input class="field" name="password" type="password" placeholder="Yeni parol">
+            <button class="btn primary" type="button" data-auth-action>Parolu yenilə</button>
           </form>
           <p class="muted" data-auth-notice></p>
         </section>

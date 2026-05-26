@@ -1,5 +1,7 @@
 // Bu fayl admin panelində CRM lead-ləri, satılmış layihələri, müştəri assetlərini və maliyyə KPI-larını idarə edir.
 import { loadLeads, money } from "./core.js";
+import { serviceCatalog } from "../data/catalog.js";
+import { createManualProject, loadAdminProjects, loadCatalogOverrides, saveCatalogOverride } from "./supabase-client.js";
 
 const statuses = ["Lead", "Qualified", "Proposal", "Contract", "Development", "QA", "Live", "Support", "Renewal-Due", "Overdue"];
 
@@ -11,7 +13,20 @@ const demoDeals = [
   { client: "BuildMax", project: "Construction ERP", status: "Renewal-Due", total: 51800, mrr: 1400, profit: 39600, domain: "buildmax.az", renewal: "2026-06-02" }
 ];
 
-function deals() {
+async function deals() {
+  const remote = await loadAdminProjects();
+  if (remote.ok && remote.data.length) {
+    return remote.data.map((row) => ({
+      client: row.sp_clients?.company_name || "Client",
+      project: row.title,
+      status: row.status,
+      total: row.total_azn,
+      mrr: row.mrr_azn,
+      profit: row.profit_azn,
+      domain: row.sp_domains?.[0]?.domain_name || "təyin edilməyib",
+      renewal: row.sp_domains?.[0]?.expires_at || "planlaşdırılır"
+    }));
+  }
   const leads = loadLeads().map((lead) => ({
     client: lead.client.company || lead.client.name || "Yeni lead",
     project: lead.selections[0]?.module_title || "Custom Project",
@@ -89,7 +104,7 @@ function draw(canvas, rows) {
   });
 }
 
-function addManualDeal() {
+async function addManualDeal() {
   const form = document.querySelector("[data-admin-form]");
   if (!form) return;
   const data = Object.fromEntries(new FormData(form).entries());
@@ -105,21 +120,66 @@ function addManualDeal() {
     renewal: data.renewal || "2026-06-30"
   });
   localStorage.setItem("sp_global_manual_deals", JSON.stringify(rows));
+  await createManualProject(Object.fromEntries(new FormData(form).entries()));
   form.reset();
-  refresh();
+  await refresh();
 }
 
-function refresh() {
-  const rows = deals();
+async function refresh() {
+  const rows = await deals();
   renderKpis(rows);
   renderTable(rows);
   draw(document.querySelector("[data-chart]"), rows);
 }
 
+async function renderCatalogEditor() {
+  const groupSelect = document.querySelector("[data-catalog-group]");
+  const itemSelect = document.querySelector("[data-catalog-item]");
+  if (!groupSelect || !itemSelect) return;
+  groupSelect.innerHTML = serviceCatalog.map((group) => `<option value="${group.id}">${group.icon} ${group.title}</option>`).join("");
+  await loadCatalogOverrides();
+  const fillItems = () => {
+    const group = serviceCatalog.find((entry) => entry.id === groupSelect.value) || serviceCatalog[0];
+    itemSelect.innerHTML = group.items.map((item) => `<option value="${item.id}">${item.title}</option>`).join("");
+    fillFields();
+  };
+  const fillFields = () => {
+    const group = serviceCatalog.find((entry) => entry.id === groupSelect.value) || serviceCatalog[0];
+    const item = group.items.find((entry) => entry.id === itemSelect.value) || group.items[0];
+    document.querySelector("[data-catalog-title]").value = item.title;
+    document.querySelector("[data-catalog-price]").value = item.price;
+    document.querySelector("[data-catalog-days]").value = item.days;
+    document.querySelector("[data-catalog-complexity]").value = item.complexity;
+  };
+  groupSelect.addEventListener("change", fillItems);
+  itemSelect.addEventListener("change", fillFields);
+  fillItems();
+}
+
+async function saveCatalog() {
+  const group = serviceCatalog.find((entry) => entry.id === document.querySelector("[data-catalog-group]").value);
+  const itemId = document.querySelector("[data-catalog-item]").value;
+  const item = group.items.find((entry) => entry.id === itemId);
+  const payload = {
+    group_key: group.id,
+    group_title: group.title,
+    module_key: item.id,
+    module_title: document.querySelector("[data-catalog-title]").value,
+    price_azn: Number(document.querySelector("[data-catalog-price]").value || 0),
+    days: Number(document.querySelector("[data-catalog-days]").value || 0),
+    complexity: Number(document.querySelector("[data-catalog-complexity]").value || 1)
+  };
+  const result = await saveCatalogOverride(payload);
+  const notice = document.querySelector("[data-catalog-notice]");
+  if (notice) notice.textContent = result.ok ? "Katalog qiyməti Supabase-də yeniləndi." : `Yadda saxlanmadı: ${result.message}`;
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   refresh();
+  renderCatalogEditor();
   document.addEventListener("click", (event) => {
     if (event.target.closest("[data-add-deal]")) addManualDeal();
+    if (event.target.closest("[data-save-catalog]")) saveCatalog();
     const status = event.target.closest("[data-status]");
     if (status) {
       const manual = JSON.parse(localStorage.getItem("sp_global_manual_deals") || "[]");

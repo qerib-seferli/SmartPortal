@@ -37,6 +37,20 @@ export function applyLanguage(lang) {
   });
 }
 
+export function applyCatalogOverrides(overrides = []) {
+  const map = new Map(overrides.map((item) => [item.module_key, item]));
+  serviceCatalog.forEach((group) => {
+    group.items.forEach((item) => {
+      const override = map.get(item.id);
+      if (!override) return;
+      item.title = override.module_title || item.title;
+      item.price = Number(override.price_azn ?? item.price);
+      item.days = Number(override.days ?? item.days);
+      item.complexity = Number(override.complexity ?? item.complexity);
+    });
+  });
+}
+
 export function money(value, currency = "AZN") {
   const meta = currencies[currency] || currencies.AZN;
   return `${meta.symbol}${Math.round(value * meta.rate).toLocaleString("az-AZ")}`;

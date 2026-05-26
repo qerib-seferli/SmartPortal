@@ -29,3 +29,21 @@ URL-lər:
 ## Supabase
 
 Supabase SQL Editor daxilində `supabase-global-pro.sql` faylını run edin. Bu prototip hazırda localStorage demo rejimdə işləyir; növbəti mərhələdə Supabase JS client əlavə edib real auth, project insert, portal data və push token yazılışını aktivləşdirmək olar.
+
+Sonra real auth, lead insert, portal RPC və katalog qiymət redaktoru üçün bu faylı da run edin:
+
+```text
+supabase-upgrade-pro.sql
+```
+
+Supabase URL və anon key üçün:
+
+```js
+// js/supabase-config.js
+window.SMARTPORTAL_SUPABASE = {
+  url: "https://YOUR_PROJECT_ID.supabase.co",
+  anonKey: "YOUR_SUPABASE_ANON_KEY"
+};
+```
+
+Bu versiyada `js/supabase-client.js` Supabase Auth, lead RPC, portal RPC, admin project RPC və katalog qiymət override-larını real bazaya bağlayır. Supabase CDN importu üçün sayt internetdə host olunanda işləyəcək.

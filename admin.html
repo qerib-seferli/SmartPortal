@@ -48,6 +48,19 @@
               <button class="btn primary" type="button" data-add-deal>Əlavə et</button>
             </form>
           </section>
+          <section class="panel glass" id="catalog">
+            <h2>480+ kalkulyator seçimlərinin qiymət redaktoru</h2>
+            <form class="admin-form">
+              <select class="select" data-catalog-group></select>
+              <select class="select" data-catalog-item></select>
+              <input class="field" data-catalog-title placeholder="Modul adı">
+              <input class="field" data-catalog-price type="number" min="0" placeholder="Qiymət">
+              <input class="field" data-catalog-days type="number" min="0" placeholder="Gün">
+              <input class="field" data-catalog-complexity type="number" min="0.5" step="0.001" placeholder="Komplekslik">
+              <button class="btn primary" type="button" data-save-catalog>Qiyməti saxla</button>
+            </form>
+            <p class="muted" data-catalog-notice></p>
+          </section>
           <section class="panel glass">
             <h2>CRM / ERP Ledger</h2>
             <div class="table-wrap"><table><thead><tr><th>Müştəri</th><th>Layihə</th><th>Status</th><th>Dəyər</th><th>MRR</th><th>Profit</th><th>Domain</th><th>Renewal</th><th>Action</th></tr></thead><tbody data-ledger></tbody></table></div>

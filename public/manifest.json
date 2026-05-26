@@ -1,0 +1,17 @@
+{
+  "name": "SmartPortal GLOBAL PRO",
+  "short_name": "GLOBAL PRO",
+  "description": "480+ option multilingual Senior Full Stack Developer CRM ERP client portal.",
+  "start_url": "../index.html",
+  "display": "standalone",
+  "background_color": "#02040a",
+  "theme_color": "#00e676",
+  "icons": [
+    { "src": "assets/icon.svg", "sizes": "512x512", "type": "image/svg+xml", "purpose": "any maskable" }
+  ],
+  "shortcuts": [
+    { "name": "Calculator", "url": "../index.html#matrix" },
+    { "name": "Client Portal", "url": "../portal.html" },
+    { "name": "Admin ERP", "url": "../admin.html" }
+  ]
+}

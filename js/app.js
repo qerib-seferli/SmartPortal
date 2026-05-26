@@ -1,0 +1,178 @@
+// Bu fayl GLOBAL PRO ana səhifə, 480+ seçim kalkulyatoru və çoxdilli UI renderini idarə edir.
+import { currencies, delivery, languages, serviceCatalog, stats, support, tiers } from "../data/catalog.js";
+import { applyLanguage, calculate, defaultState, loadState, money, payload, requestPushDemo, saveLead, saveState, t } from "./core.js";
+
+let state = loadState();
+const $ = (selector) => document.querySelector(selector);
+
+function renderTopControls() {
+  document.querySelectorAll("[data-lang-select]").forEach((node) => {
+    node.innerHTML = languages.map((lang) => `<option value="${lang.id}">${lang.name}</option>`).join("");
+    node.value = state.lang;
+  });
+  const currency = $("[data-currency]");
+  const tier = $("[data-tier]");
+  const deliveryNode = $("[data-delivery]");
+  const supportNode = $("[data-support]");
+  if (currency) currency.innerHTML = Object.keys(currencies).map((id) => `<option value="${id}">${id}</option>`).join("");
+  if (tier) tier.innerHTML = tiers.map((item) => `<option value="${item.id}">${item.title}</option>`).join("");
+  if (deliveryNode) deliveryNode.innerHTML = delivery.map((item) => `<option value="${item.id}">${item.title}</option>`).join("");
+  if (supportNode) supportNode.innerHTML = support.map((item) => `<option value="${item.id}">${item.title}</option>`).join("");
+  if (currency) currency.value = state.currency;
+  if (tier) tier.value = state.tier;
+  if (deliveryNode) deliveryNode.value = state.delivery;
+  if (supportNode) supportNode.value = state.support;
+}
+
+function renderStats() {
+  const s = stats();
+  const root = $("[data-stats]");
+  if (!root) return;
+  root.innerHTML = [
+    [s.modules, "Seçim və modul"],
+    [s.groups, "Böyük bölmə"],
+    [s.languages, "Dil"],
+    [s.currencies, "Valyuta"]
+  ].map(([value, label]) => `<article class="stat glass"><strong>${value}+</strong><span>${label}</span></article>`).join("");
+}
+
+function renderGroups() {
+  const root = $("[data-groups]");
+  if (!root) return;
+  root.innerHTML = serviceCatalog.map((group) => {
+    const selected = state.selected[group.id];
+    const count = Array.isArray(selected) ? selected.length : selected ? 1 : 0;
+    return `<button class="group-tab ${group.id === state.activeGroup ? "active" : ""}" data-group="${group.id}"><span>${group.icon} ${group.title}</span><strong>${count}</strong></button>`;
+  }).join("");
+}
+
+function renderOptions() {
+  const group = serviceCatalog.find((item) => item.id === state.activeGroup) || serviceCatalog[0];
+  const title = $("[data-group-title]");
+  const hint = $("[data-group-hint]");
+  const root = $("[data-options]");
+  if (!title || !hint || !root) return;
+  title.textContent = `${group.icon} ${group.title}`;
+  hint.textContent = group.type === "radio" ? "Ana platforma tipini seçin." : `${group.items.length} seçim: lazım olan hər şeyi seçə bilərsiniz.`;
+  root.innerHTML = group.items.map((item) => {
+    const checked = group.type === "radio" ? state.selected[group.id] === item.id : (state.selected[group.id] || []).includes(item.id);
+    return `
+      <label class="option">
+        <span class="option-title">
+          <input type="${group.type}" name="${group.id}" value="${item.id}" ${checked ? "checked" : ""}>
+          <span>${item.title}</span>
+        </span>
+        <span class="pills">
+          <span class="pill">${money(item.price, state.currency)}</span>
+          <span class="pill">${item.days} gün</span>
+          <span class="pill">x${item.complexity}</span>
+        </span>
+      </label>
+    `;
+  }).join("");
+}
+
+function renderSummary() {
+  const metrics = calculate(state);
+  const total = $("[data-total]");
+  const summary = $("[data-summary]");
+  const score = $("[data-score]");
+  const payloadNode = $("[data-payload]");
+  if (total) total.textContent = money(metrics.total, state.currency);
+  if (score) score.style.setProperty("--value", `${metrics.score}%`);
+  if (payloadNode) payloadNode.value = JSON.stringify(payload(state), null, 2);
+  if (!summary) return;
+  summary.innerHTML = `
+    <div class="summary-row"><span>Seçilmiş modul</span><strong>${metrics.items.length}</strong></div>
+    <div class="summary-row"><span>Komplekslik</span><strong>x${metrics.complexity}</strong></div>
+    <div class="summary-row"><span>Scope genişliyi</span><strong>x${metrics.breadth}</strong></div>
+    <div class="summary-row"><span>Təhvil</span><strong>${metrics.deliveryDays} iş günü</strong></div>
+    <div class="summary-row"><span>MRR</span><strong>${money(metrics.mrr, state.currency)}</strong></div>
+    <div class="summary-row"><span>ARR</span><strong>${money(metrics.arr, state.currency)}</strong></div>
+    <div class="summary-row"><span>LTV</span><strong>${money(metrics.ltv, state.currency)}</strong></div>
+    <div class="summary-row"><span>Mənfəət</span><strong>${money(metrics.profit, state.currency)} · ${metrics.margin}%</strong></div>
+    <div class="summary-row"><span>Lead score</span><strong>${metrics.score}/100</strong></div>
+  `;
+}
+
+function addCustom() {
+  const name = $("[data-custom-name]");
+  const price = $("[data-custom-price]");
+  const days = $("[data-custom-days]");
+  if (!name?.value.trim()) return;
+  state.custom.push({ id: `custom-${Date.now()}`, title: name.value.trim(), price: Number(price.value || 0), days: Number(days.value || 0), complexity: 1.1 });
+  name.value = "";
+  price.value = "";
+  days.value = "";
+  saveState(state);
+  renderAll();
+}
+
+function submitLead() {
+  const form = $("[data-lead-form]");
+  const notice = $("[data-notice]");
+  if (!form || !notice) return;
+  state.client = Object.fromEntries(new FormData(form).entries());
+  saveState(state);
+  saveLead(state);
+  notice.textContent = "Lead admin bazasına demo rejimdə əlavə olundu. Admin paneldə görə bilərsiniz.";
+  renderSummary();
+}
+
+function bind() {
+  document.addEventListener("click", (event) => {
+    const group = event.target.closest("[data-group]");
+    if (group) {
+      state.activeGroup = group.dataset.group;
+      saveState(state);
+      renderAll();
+    }
+    if (event.target.closest("[data-add-custom]")) addCustom();
+    if (event.target.closest("[data-submit-lead]")) submitLead();
+    if (event.target.closest("[data-reset]")) {
+      state = defaultState();
+      saveState(state);
+      renderTopControls();
+      renderAll();
+    }
+    if (event.target.closest("[data-push-demo]")) {
+      requestPushDemo("SmartPortal xatırlatma", "Domain və aylıq ödəniş vaxtı yaxınlaşır.");
+    }
+  });
+
+  document.addEventListener("change", (event) => {
+    const input = event.target;
+    if (input.matches("[data-lang-select]")) state.lang = input.value;
+    if (input.matches("[data-currency]")) state.currency = input.value;
+    if (input.matches("[data-tier]")) state.tier = input.value;
+    if (input.matches("[data-delivery]")) state.delivery = input.value;
+    if (input.matches("[data-support]")) state.support = input.value;
+    if (input.matches("[data-options] input")) {
+      const group = serviceCatalog.find((item) => item.id === state.activeGroup);
+      if (group?.type === "radio") state.selected[group.id] = input.value;
+      if (group?.type === "checkbox") {
+        const set = new Set(state.selected[group.id] || []);
+        input.checked ? set.add(input.value) : set.delete(input.value);
+        state.selected[group.id] = [...set];
+      }
+    }
+    saveState(state);
+    applyLanguage(state.lang);
+    renderAll();
+  });
+}
+
+function renderAll() {
+  applyLanguage(state.lang);
+  renderGroups();
+  renderOptions();
+  renderSummary();
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  renderTopControls();
+  renderStats();
+  bind();
+  renderAll();
+  if ("serviceWorker" in navigator) navigator.serviceWorker.register("public/service-worker.js").catch(() => {});
+});

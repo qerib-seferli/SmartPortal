@@ -1,210 +1,120 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="az">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SmartPortal | Layihə Qiymət Kalkulyatoru</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        :root { --p: #7c4dff; --p-soft: #f5f3ff; --dark: #2d3436; --border: #dfe6e9; --white: #ffffff; }
-        body { font-family: 'Inter', sans-serif; background: #f0f2f5; color: var(--dark); padding: 20px; }
-        .container { max-width: 1100px; margin: 0 auto; background: var(--white); border-radius: 30px; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.1); }
-        
-        .hero { background: var(--p); color: white; padding: 50px 20px; text-align: center; }
-        .hero h1 { font-size: 32px; font-weight: 800; margin: 0; }
-        .hero p { opacity: 0.9; margin-top: 10px; }
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#00e676">
+    <meta name="description" content="SmartPortal GLOBAL PRO, 480+ seçimli çoxdilli Senior Full Stack Developer satış, CRM, ERP və müştəri portal platforması.">
+    <title>SmartPortal GLOBAL PRO</title>
+    <link rel="manifest" href="public/manifest.json">
+    <link rel="icon" href="public/assets/icon.svg">
+    <link rel="stylesheet" href="css/style.css">
+  </head>
+  <body>
+    <div class="shell">
+      <header class="topbar">
+        <a class="brand" href="index.html"><img src="public/assets/icon.svg" alt=""><span>SmartPortal GLOBAL PRO</span></a>
+        <nav class="nav">
+          <select class="select" data-lang-select aria-label="Dil"></select>
+          <a class="btn" href="auth.html" data-i18n="auth">Daxil ol</a>
+          <a class="btn" href="portal.html" data-i18n="portal">Müştəri portalı</a>
+          <a class="btn" href="admin.html" data-i18n="admin">Admin ERP</a>
+          <a class="btn primary" href="#matrix" data-i18n="start">Kalkulyatoru aç</a>
+        </nav>
+      </header>
 
-        .section { padding: 35px; border-bottom: 1px solid var(--border); }
-        .section-title { font-size: 22px; font-weight: 800; margin-bottom: 25px; display: flex; align-items: center; gap: 12px; color: var(--p); }
-        
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 15px; }
-        .card { border: 1.5px solid var(--border); border-radius: 15px; padding: 18px; cursor: pointer; transition: 0.2s; display: flex; justify-content: space-between; align-items: center; background: #fff; }
-        .card:hover { border-color: var(--p); background: var(--p-soft); }
-        .card.active { border-color: var(--p); background: var(--p-soft); box-shadow: 0 0 0 2px var(--p); }
-        .card input { display: none; }
-        .card .info b { font-size: 14px; display: block; }
-        .card .info span { font-size: 12px; color: var(--p); font-weight: bold; }
-        .card i { font-size: 20px; color: #a29bfe; }
-
-        .slider-box { background: var(--p-soft); padding: 30px; border-radius: 20px; margin: 20px 0; text-align: center; }
-        input[type="range"] { width: 100%; height: 8px; border-radius: 5px; accent-color: var(--p); }
-
-        .summary-card { background: #faf9ff; padding: 40px; border-top: 4px solid var(--p); }
-        .sum-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #eee; }
-        .total-area { text-align: center; padding: 30px 0; }
-        .total-area h2 { font-size: 64px; color: var(--p); margin: 0; font-weight: 900; }
-        
-        .btn-group { display: flex; gap: 15px; margin-top: 20px; }
-        .btn { flex: 1; padding: 20px; border-radius: 15px; border: none; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 16px; transition: 0.3s; }
-        .btn-main { background: var(--p); color: white; }
-        .btn-sec { background: #fff; border: 2px solid var(--p); color: var(--p); }
-        .btn:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(124, 77, 255, 0.2); }
-
-        .features-footer { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; padding: 40px; background: #fff; text-align: center; }
-        .f-item i { font-size: 30px; color: var(--p); margin-bottom: 10px; }
-        .f-item h4 { margin: 5px 0; }
-        .f-item p { font-size: 12px; color: var(--gray); }
-    </style>
-</head>
-<body>
-
-<div class="container">
-    <div class="hero">
-        <h1>SmartPortal Layihə Qiymət Kalkulyatoru</h1>
-        <p>Ehtiyaclarınıza uyğun dəqiq qiymət hesablayın</p>
-        <button class="btn" style="background:rgba(255,255,255,0.2); width:auto; margin:20px auto; color:white;">🤖 AI Köməkçini Sına</button>
-    </div>
-
-    <div class="section">
-        <div class="section-title">🎯 Xidmət Növü</div>
-        <div class="grid">
-            <label class="card active"><input type="radio" name="base" value="480" checked onchange="calc()"><div class="info"><b>🌐 Veb Sayt</b><span>₼ 480-dən</span></div></label>
-            <label class="card"><input type="radio" name="base" value="1440" onchange="calc()"><div class="info"><b>🛒 E-ticarət</b><span>₼ 1440-dan</span></div></label>
-            <label class="card"><input type="radio" name="base" value="6000" onchange="calc()"><div class="info"><b>⚙️ Xüsusi Sistem</b><span>₼ 6000-dən</span></div></label>
-        </div>
-    </div>
-
-    <div class="section">
-        <div class="section-title">📄 Sayt Detalları</div>
-        <div class="slider-box">
-            <p>Səhifə Sayı: <b id="pageLabel">5</b></p>
-            <input type="range" id="pageRange" min="1" max="50" value="5" oninput="calc()">
-        </div>
-        <div class="grid">
-            <label class="card active"><input type="radio" name="design" value="1" checked onchange="calc()"><div class="info"><b>Sadə</b><span>×1</span></div></label>
-            <label class="card"><input type="radio" name="design" value="1.3" onchange="calc()"><div class="info"><b>Peşəkar</b><span>×1.3</span></div></label>
-            <label class="card"><input type="radio" name="design" value="1.6" onchange="calc()"><div class="info"><b>Xüsusi</b><span>×1.6</span></div></label>
-        </div>
-    </div>
-
-    <div class="section">
-        <div class="section-title">🎨 Veb Sayt Əlavələri</div>
-        <div class="grid" id="websiteAddons">
+      <main>
+        <section class="hero">
+          <div>
+            <p class="eyebrow">GLOBAL SENIOR FULL STACK EXPERIENCE</p>
+            <h1 data-i18n="heroTitle">Senior Full Stack Developer studiyası üçün dünya səviyyəli satış və idarəetmə platforması.</h1>
+            <p class="lead" data-i18n="heroText">Çoxdilli, çoxvalyutalı, 480+ seçimli qiymət matrisi, CRM, ERP, müştəri kabineti, domain/e-mail/ödəniş izləmə və push xatırlatma sistemi.</p>
+            <div class="nav">
+              <a class="btn primary" href="#matrix" data-i18n="start">Kalkulyatoru aç</a>
+              <button class="btn hot" type="button" data-push-demo>Push demo</button>
+              <a class="btn" href="admin.html">ERP/CRM</a>
             </div>
-    </div>
+            <div class="stats" data-stats></div>
+          </div>
+          <aside class="stage glass">
+            <div class="orbit"></div>
+            <div class="orbit two"></div>
+            <pre class="code-wall">const studio = new SeniorFullStackDeveloper({
+  market: "global",
+  languages: 12,
+  currencies: 10,
+  modules: "480+",
+  crm: true,
+  erp: true,
+  clientPortal: true,
+  pushReminders: true
+});
 
-    <div class="section">
-        <div class="section-title">🔍 Axtarış Motorunun Optimallaşdırılması (SEO)</div>
-        <div class="grid" id="seoAddons">
+await studio.launch("world-class");
+await clients.say("wow");</pre>
+            <div class="developer-card glass">
+              <div class="avatar">FS</div>
+              <h2>Full Stack Command Center</h2>
+              <p class="muted">Satışdan müqaviləyə, domain xatırlatmadan müştəri kabinetinə qədər bütün biznes tək platformada.</p>
             </div>
+          </aside>
+        </section>
+
+        <section class="section">
+          <div class="section-head"><div><p class="eyebrow">Nə əlavə etdim</p><h2>Unudulan hissələr də daxil edildi</h2></div></div>
+          <div class="cards">
+            <article class="card glass"><h3>🔐 Auth</h3><p>Qeydiyyat, daxil ol, parolu unutdum və gələcək Supabase Auth qoşulması üçün hazır səhifə.</p></article>
+            <article class="card glass"><h3>📱 Müştəri portalı</h3><p>Domain, SSL, hosting, email, ödəniş, layihə statusu və support ticket görünüşü.</p></article>
+            <article class="card glass"><h3>🔔 Push xatırlatma</h3><p>Domain və aylıq ödəniş vaxtı yaxınlaşanda PWA notification modeli.</p></article>
+            <article class="card glass"><h3>🌍 Global</h3><p>12 dil, 10 valyuta, RTL dəstəyi, dünya bazarı üçün geniş xidmət kataloqu.</p></article>
+          </div>
+        </section>
+
+        <section class="section" id="matrix">
+          <div class="section-head">
+            <div><p class="eyebrow" data-i18n="live">Canlı hesab</p><h2 data-i18n="matrixTitle">GLOBAL PRO 480+ seçim kalkulyatoru</h2></div>
+            <button class="btn" type="button" data-reset>Sıfırla</button>
+          </div>
+          <div class="matrix">
+            <aside class="rail glass" data-groups></aside>
+            <section class="workspace glass">
+              <div class="control-grid">
+                <select class="select" data-currency aria-label="Valyuta"></select>
+                <select class="select" data-tier aria-label="Səviyyə"></select>
+                <select class="select" data-delivery aria-label="Təhvil"></select>
+                <select class="select" data-support aria-label="Dəstək"></select>
+              </div>
+              <h2 data-group-title></h2>
+              <p class="muted" data-group-hint></p>
+              <div class="option-grid" data-options></div>
+              <div class="custom">
+                <input class="field" data-custom-name placeholder="Müştərinin xüsusi istəyi">
+                <input class="field" data-custom-price type="number" min="0" placeholder="Qiymət">
+                <input class="field" data-custom-days type="number" min="0" placeholder="Gün">
+                <button class="btn hot" type="button" data-add-custom>Əlavə et</button>
+              </div>
+            </section>
+            <aside class="summary glass">
+              <p class="eyebrow" data-i18n="live">Canlı hesab</p>
+              <div class="total" data-total>₼0</div>
+              <div class="progress" data-score><span></span></div>
+              <div data-summary></div>
+              <form class="form-grid" data-lead-form>
+                <input class="field" name="name" placeholder="Ad Soyad" required>
+                <input class="field" name="company" placeholder="Şirkət">
+                <input class="field" name="email" type="email" placeholder="Email" required>
+                <input class="field" name="phone" placeholder="Telefon" required>
+                <input class="field" name="industry" placeholder="Sahə">
+                <textarea class="textarea" name="notes" placeholder="Əlavə qeyd"></textarea>
+                <button class="btn primary" type="button" data-submit-lead data-i18n="send">CRM-ə göndər</button>
+              </form>
+              <p class="muted" data-notice></p>
+              <textarea class="textarea" data-payload readonly></textarea>
+            </aside>
+          </div>
+        </section>
+      </main>
     </div>
-
-    <div class="section">
-        <div class="section-title">🎨 Logo Dizaynı</div>
-        <div class="grid">
-            <label class="card active"><input type="radio" name="logo" value="0" checked onchange="calc()"><div class="info"><b>Ehtiyac yoxdur</b><span>Pulsuz</span></div></label>
-            <label class="card"><input type="radio" name="logo" value="96" onchange="calc()"><div class="info"><b>Əsas (AI köməkli)</b><span>+₼ 96</span></div></label>
-            <label class="card"><input type="radio" name="logo" value="240" onchange="calc()"><div class="info"><b>Standart (2 konsept)</b><span>+₼ 240</span></div></label>
-            <label class="card"><input type="radio" name="logo" value="420" onchange="calc()"><div class="info"><b>Peşəkar (3 konsept)</b><span>+₼ 420</span></div></label>
-            <label class="card"><input type="radio" name="logo" value="600" onchange="calc()"><div class="info"><b>Premium (5 konsept)</b><span>+₼ 600</span></div></label>
-            <label class="card"><input type="radio" name="logo" value="900" onchange="calc()"><div class="info"><b>Eksklüziv (Hand-drawn)</b><span>+₼ 900</span></div></label>
-        </div>
-    </div>
-
-    <div class="section">
-        <div class="section-title">⏱️ Təslim Müddəti</div>
-        <div class="grid">
-            <label class="card"><input type="radio" name="speed" value="1.5" onchange="calc()"><div class="info"><b>🚀 Təcili (7 gün)</b><span>×1.5</span></div></label>
-            <label class="card"><input type="radio" name="speed" value="1.25" onchange="calc()"><div class="info"><b>⚡ Sürətli (14 gün)</b><span>×1.25</span></div></label>
-            <label class="card active"><input type="radio" name="speed" value="1" checked onchange="calc()"><div class="info"><b>📅 Standart (30 gün)</b><span>×1</span></div></label>
-        </div>
-    </div>
-
-    <div class="section">
-        <div class="section-title">🛡️ Dəstək Paketi</div>
-        <div class="grid">
-            <label class="card active"><input type="radio" name="support" value="0" checked onchange="calc()"><div class="info"><b>Dəstək yoxdur</b><span>Pulsuz</span></div></label>
-            <label class="card"><input type="radio" name="support" value="60" onchange="calc()"><div class="info"><b>Əsas Paketi</b><span>₼ 60/ay</span></div></label>
-            <label class="card"><input type="radio" name="support" value="144" onchange="calc()"><div class="info"><b>Standart Paketi</b><span>₼ 144/ay</span></div></label>
-            <label class="card"><input type="radio" name="support" value="300" onchange="calc()"><div class="info"><b>Professional Paketi</b><span>₼ 300/ay</span></div></label>
-        </div>
-    </div>
-
-    <div class="summary-card">
-        <div class="section-title">📋 Qiymət Xülasəsi</div>
-        <div id="summaryRows"></div>
-        <div class="total-area">
-            <p>Təxmini Qiymət</p>
-            <h2 id="grandTotal">₼ 480</h2>
-            <p>* ƏDV daxil deyil</p>
-        </div>
-        <div class="btn-group">
-            <button class="btn btn-main"><i class="fab fa-whatsapp"></i> Pulsuz Konsultasiya Al</button>
-            <button class="btn btn-sec"><i class="fas fa-file-pdf"></i> PDF Yüklə</button>
-        </div>
-    </div>
-
-    <div class="features-footer">
-        <div class="f-item"><i class="fas fa-bolt"></i><h4>Sürətli Təslim</h4><p>Layihələri vaxtında təhvil veririk</p></div>
-        <div class="f-item"><i class="fas fa-gem"></i><h4>Premium Keyfiyyət</h4><p>20 illik peşəkar təcrübə</p></div>
-        <div class="f-item"><i class="fas fa-shield-alt"></i><h4>Ömürlük Dəstək</h4><p>Həmişə yanınızdayıq</p></div>
-        <div class="f-item"><i class="fas fa-search-dollar"></i><h4>Şəffaf Qiymət</h4><p>Gizli xərclər yoxdur</p></div>
-    </div>
-</div>
-
-<script>
-    const webAddonsData = [
-        {n: "Əlaqə Forması", p: 60}, {n: "Qabaqcıl Formalar", p: 180}, {n: "Qalereya", p: 120}, {n: "Bloq Sistemi", p: 180},
-        {n: "Xəbərlər", p: 120}, {n: "Admin Panel", p: 240}, {n: "Məhsul Kataloqu", p: 240}, {n: "Xidmət Siyahısı", p: 180},
-        {n: "Komanda Səhifəsi", p: 96}, {n: "Müştəri Rəyləri", p: 96}, {n: "FAQ Bölməsi", p: 72}, {n: "Xəbər Bülleteni", p: 120},
-        {n: "Üzv Girişi", p: 300}, {n: "İstifadəçi Paneli", p: 480}, {n: "Rezervasiya", p: 420}, {n: "Tədbir Təqvimi", p: 240},
-        {n: "Sənəd Yükləmə", p: 120}, {n: "Axtarış Funksiyası", p: 144}, {n: "Canlı Söhbət", p: 180}, {n: "WhatsApp İnteqrasiya", p: 120},
-        {n: "Sosial Linklər", p: 60}, {n: "Sosial Lenti", p: 180}, {n: "Xəritə", p: 96}, {n: "Çoxlu Xəritə", p: 180},
-        {n: "Çoxdilli (AZ/RU/EN)", p: 360}, {n: "Google Analytics", p: 120}, {n: "FB Pixel", p: 96}, {n: "Email İnteqrasiya", p: 180},
-        {n: "API İnteqrasiyası", p: 360}, {n: "Yedəkləmə", p: 120}, {n: "Şəkil Optimizasiyası", p: 96}, {n: "Video İnteqrasiya", p: 144},
-        {n: "Animasiyalar", p: 240}, {n: "Sürət Optimizasiyası", p: 240}, {n: "SSL Təhlükəsizlik", p: 120}, {n: "Forum Sistemi", p: 500},
-        {n: "Ödəniş Keçidi", p: 480}, {n: "SMS Bildiriş", p: 300}, {n: "CRM İnteqrasiya", p: 600}, {n: "Kalkulyator Sistemi", p: 250},
-        {n: "Pop-up Mesajlar", p: 100}, {n: "Dark Mode", p: 150}, {n: "PDF Generator", p: 350}, {n: "QR Kod Sistemi", p: 200},
-        {n: "Şərh Bölməsi", p: 150}, {n: "Səsli Axtarış", p: 400}, {n: "Mobil Uyğunluq", p: 200}, {n: "PWA Dəstəyi", p: 700},
-        {n: "Hava Proqnozu API", p: 150}, {n: "Valyuta Kursu", p: 150}
-    ];
-
-    const seoAddonsData = [
-        {n: "Səhifədaxili SEO", p: 180}, {n: "Meta Teqlər", p: 96}, {n: "XML Sitemap", p: 72}, {n: "Robots.txt", p: 48},
-        {n: "Google My Business", p: 120}, {n: "Açar Söz Tədqiqatı", p: 240}, {n: "Rəqib Təhlili", p: 300}, {n: "Məzmun Optimizasiyası", p: 240},
-        {n: "Schema İşarələməsi", p: 180}, {n: "Lokal SEO Paketi", p: 360}, {n: "Texniki SEO Auditi", p: 480}, {n: "Backlink Təhlili", p: 350},
-        {n: "Həftəlik Hesabat", p: 200}, {n: "Google Search Console", p: 150}, {n: "Sürət Auditi", p: 220}, {n: "Şəkil Alt Teqləri", p: 100},
-        {n: "404 Xətaları Düzəlişi", p: 150}, {n: "Daxili Linkləmə", p: 250}, {n: "Kanonik Teqlər", p: 120}, {n: "SEO Bloq Məqaləsi", p: 180}
-    ];
-
-    function renderAddons() {
-        const webGrid = document.getElementById('websiteAddons');
-        webAddonsData.forEach(a => {
-            webGrid.innerHTML += `<label class="card"><input type="checkbox" class="xtra" value="${a.p}" onchange="calc()"><div class="info"><b>${a.n}</b><span>+₼ ${a.p}</span></div></label>`;
-        });
-        const seoGrid = document.getElementById('seoAddons');
-        seoAddonsData.forEach(a => {
-            seoGrid.innerHTML += `<label class="card"><input type="checkbox" class="xtra" value="${a.p}" onchange="calc()"><div class="info"><b>${a.n}</b><span>+₼ ${a.p}</span></div></label>`;
-        });
-    }
-
-    function calc() {
-        const base = parseInt(document.querySelector('input[name="base"]:checked').value);
-        const pages = parseInt(document.getElementById('pageRange').value);
-        const design = parseFloat(document.querySelector('input[name="design"]:checked').value);
-        const logo = parseInt(document.querySelector('input[name="logo"]:checked').value);
-        const speed = parseFloat(document.querySelector('input[name="speed"]:checked').value);
-        const support = parseInt(document.querySelector('input[name="support"]:checked').value);
-        
-        let xtraSum = 0;
-        document.querySelectorAll('.xtra:checked').forEach(c => xtraSum += parseInt(c.value));
-
-        let designCost = (pages * 20) * design; // Hər səhifə 20 AZN (20% artıq)
-        let total = (base + designCost + xtraSum + logo + support) * speed;
-
-        document.getElementById('pageLabel').innerText = pages + " səhifə";
-        document.getElementById('grandTotal').innerText = "₼ " + Math.round(total);
-
-        document.querySelectorAll('.card').forEach(c => {
-            const i = c.querySelector('input');
-            if(i.checked) c.classList.add('active'); else c.classList.remove('active');
-        });
-    }
-
-    renderAddons();
-    calc();
-</script>
-
-</body>
+    <script type="module" src="js/app.js"></script>
+  </body>
 </html>

@@ -8,7 +8,7 @@ export function defaultState() {
     currency: "AZN",
     tier: "pro",
     delivery: "30d",
-    support: "growth",
+    support: "none",
     activeGroup: "platform",
     selected: { platform: "corporate" },
     custom: [],
@@ -88,10 +88,12 @@ export function calculate(state) {
   const days = items.reduce((sum, item) => sum + item.days, 0);
   const complexity = addonItems.length ? Math.min(3.8, addonItems.reduce((factor, item) => factor * (item.complexity || 1), 1)) : 1;
   const breadth = Math.min(1.9, 1 + Math.max(0, items.length - 18) * 0.018);
-  const platformTotal = platformRaw * deliveryMode.multiplier;
-  const addonTotal = addonRaw * tier.multiplier * deliveryMode.multiplier * complexity * breadth;
-  const total = Math.round(platformTotal + addonTotal);
-  const deliveryDays = Math.max(5, Math.ceil(days * tier.dayFactor * deliveryMode.factor));
+  const platformTotal = platformRaw;
+  const addonTotal = addonRaw;
+  const total = Math.round((platformTotal + addonTotal) * deliveryMode.multiplier);
+  const calculatedDays = Math.ceil(days * deliveryMode.factor);
+  const deliveryMinimums = { "7d": 7, "14d": 14, "30d": 30, "45d": 45, "60d": 60 };
+  const deliveryDays = Math.max(deliveryMinimums[state.delivery] || 30, calculatedDays);
   const mrr = supportPlan.monthly;
   const arr = mrr * 12;
   const infrastructure = Math.round(total * 0.17 + items.length * 22 + mrr * 0.24);

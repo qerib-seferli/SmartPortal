@@ -210,7 +210,7 @@ main > .section:first-child h1 { font-size: clamp(2rem, 4vw, 3.4rem); }
   text-align: start;
 }
 .group-tab.active { color: #02130a; background: var(--green); border-color: transparent; }
-.control-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin-bottom: 14px; }
+.control-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 10px; margin-bottom: 14px; }
 .option-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px; }
 .option {
   min-height: 112px;

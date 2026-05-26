@@ -1,5 +1,5 @@
 // Bu fayl GLOBAL PRO ana səhifə, 480+ seçim kalkulyatoru və çoxdilli UI renderini idarə edir.
-import { currencies, delivery, languages, serviceCatalog, stats, support, tiers } from "../data/catalog.js";
+import { currencies, delivery, languages, serviceCatalog, stats, support } from "../data/catalog.js";
 import { applyCatalogOverrides, applyLanguage, calculate, defaultState, loadState, money, payload, requestPushDemo, saveLead, saveState } from "./core.js";
 import { loadCatalogOverrides, submitLeadToSupabase } from "./supabase-client.js";
 
@@ -7,10 +7,10 @@ let state = loadState();
 const $ = (selector) => document.querySelector(selector);
 
 const uiText = {
-  az: { selected: "Seçilmiş modul", complexity: "Komplekslik", breadth: "Scope genişliyi", delivery: "Təhvil planı", support: "Aylıq dəstək", yearly: "İllik dəstək", ltv: "2 illik dəyər", profit: "Mənfəət", days: "iş günü", platformHint: "Ana platforma tipini seçin.", groupHint: "seçim: lazım olan hər şeyi seçə bilərsiniz.", sending: "Lead göndərilir...", sent: "Lead Supabase CRM bazasına əlavə olundu.", demo: "Demo yaddaşa əlavə olundu.", name: "Ad Soyad", company: "Şirkət", phone: "Telefon", industry: "Sahə", notes: "Əlavə qeyd" },
-  en: { selected: "Selected modules", complexity: "Complexity", breadth: "Scope breadth", delivery: "Delivery plan", support: "Monthly support", yearly: "Yearly support", ltv: "2-year value", profit: "Profit", days: "business days", platformHint: "Choose the main platform type.", groupHint: "options: select everything you need.", sending: "Sending lead...", sent: "Lead was added to Supabase CRM.", demo: "Added to demo storage.", name: "Full name", company: "Company", phone: "Phone", industry: "Industry", notes: "Notes" },
-  tr: { selected: "Seçilen modül", complexity: "Karmaşıklık", breadth: "Scope genişliği", delivery: "Teslim planı", support: "Aylık destek", yearly: "Yıllık destek", ltv: "2 yıllık değer", profit: "Kâr", days: "iş günü", platformHint: "Ana platform tipini seçin.", groupHint: "seçenek: ihtiyacınız olan her şeyi seçin.", sending: "Lead gönderiliyor...", sent: "Lead Supabase CRM'e eklendi.", demo: "Demo hafızaya eklendi.", name: "Ad Soyad", company: "Şirket", phone: "Telefon", industry: "Sektör", notes: "Notlar" },
-  ru: { selected: "Выбранные модули", complexity: "Сложность", breadth: "Ширина scope", delivery: "План сдачи", support: "Ежемесячная поддержка", yearly: "Годовая поддержка", ltv: "Ценность за 2 года", profit: "Прибыль", days: "рабочих дней", platformHint: "Выберите тип платформы.", groupHint: "опций: выберите все нужное.", sending: "Отправка лида...", sent: "Лид добавлен в Supabase CRM.", demo: "Добавлено в demo storage.", name: "Имя", company: "Компания", phone: "Телефон", industry: "Сфера", notes: "Комментарий" }
+  az: { selected: "Seçilmiş modul", complexity: "Komplekslik", breadth: "Scope genişliyi", delivery: "Təhvil planı", support: "Aylıq dəstək", yearly: "İllik dəstək", ltv: "2 illik dəyər", noSupport: "Dəstək seçilməyib", profit: "Mənfəət", leadScore: "Lead score", days: "iş günü", platformHint: "Ana platforma tipini seçin.", groupHint: "seçim: lazım olan hər şeyi seçə bilərsiniz.", sending: "Lead göndərilir...", sent: "Lead Supabase CRM bazasına əlavə olundu.", demo: "Demo yaddaşa əlavə olundu.", name: "Ad Soyad", company: "Şirkət", phone: "Telefon", industry: "Sahə", notes: "Əlavə qeyd" },
+  en: { selected: "Selected modules", complexity: "Complexity", breadth: "Scope breadth", delivery: "Delivery plan", support: "Monthly support", yearly: "Yearly support", ltv: "2-year value", noSupport: "No support selected", profit: "Profit", leadScore: "Lead score", days: "business days", platformHint: "Choose the main platform type.", groupHint: "options: select everything you need.", sending: "Sending lead...", sent: "Lead was added to Supabase CRM.", demo: "Added to demo storage.", name: "Full name", company: "Company", phone: "Phone", industry: "Industry", notes: "Notes" },
+  tr: { selected: "Seçilen modül", complexity: "Karmaşıklık", breadth: "Scope genişliği", delivery: "Teslim planı", support: "Aylık destek", yearly: "Yıllık destek", ltv: "2 yıllık değer", noSupport: "Destek seçilmedi", profit: "Kâr", leadScore: "Lead skoru", days: "iş günü", platformHint: "Ana platform tipini seçin.", groupHint: "seçenek: ihtiyacınız olan her şeyi seçin.", sending: "Lead gönderiliyor...", sent: "Lead Supabase CRM'e eklendi.", demo: "Demo hafızaya eklendi.", name: "Ad Soyad", company: "Şirket", phone: "Telefon", industry: "Sektör", notes: "Notlar" },
+  ru: { selected: "Выбранные модули", complexity: "Сложность", breadth: "Ширина scope", delivery: "План сдачи", support: "Ежемесячная поддержка", yearly: "Годовая поддержка", ltv: "Ценность за 2 года", noSupport: "Поддержка не выбрана", profit: "Прибыль", leadScore: "Оценка лида", days: "рабочих дней", platformHint: "Выберите тип платформы.", groupHint: "опций: выберите все нужное.", sending: "Отправка лида...", sent: "Лид добавлен в Supabase CRM.", demo: "Добавлено в demo storage.", name: "Имя", company: "Компания", phone: "Телефон", industry: "Сфера", notes: "Комментарий" }
 };
 
 const groupTranslations = {
@@ -42,15 +42,12 @@ function renderTopControls() {
     node.value = state.lang;
   });
   const currency = $("[data-currency]");
-  const tier = $("[data-tier]");
   const deliveryNode = $("[data-delivery]");
   const supportNode = $("[data-support]");
   if (currency) currency.innerHTML = Object.keys(currencies).map((id) => `<option value="${id}">${id}</option>`).join("");
-  if (tier) tier.innerHTML = tiers.map((item) => `<option value="${item.id}">${item.title}</option>`).join("");
   if (deliveryNode) deliveryNode.innerHTML = delivery.map((item) => `<option value="${item.id}">${item.title}</option>`).join("");
   if (supportNode) supportNode.innerHTML = support.map((item) => `<option value="${item.id}">${item.title}</option>`).join("");
   if (currency) currency.value = state.currency;
-  if (tier) tier.value = state.tier;
   if (deliveryNode) deliveryNode.value = state.delivery;
   if (supportNode) supportNode.value = state.support;
 }
@@ -118,16 +115,20 @@ function renderSummary() {
     notes.value = scope ? `Seçilənlər:\n${scope}` : "";
   }
   if (!summary) return;
+  const supportRows = metrics.mrr
+    ? `
+    <div class="summary-row"><span>${ui("support")}</span><strong>${money(metrics.mrr, state.currency)}</strong></div>
+    <div class="summary-row"><span>${ui("yearly")}</span><strong>${money(metrics.arr, state.currency)}</strong></div>
+    <div class="summary-row"><span>${ui("ltv")}</span><strong>${money(metrics.ltv, state.currency)}</strong></div>`
+    : `<div class="summary-row"><span>${ui("support")}</span><strong>${ui("noSupport")}</strong></div>`;
   summary.innerHTML = `
     <div class="summary-row"><span>${ui("selected")}</span><strong>${metrics.items.length}</strong></div>
     <div class="summary-row"><span>${ui("complexity")}</span><strong>x${metrics.complexity}</strong></div>
     <div class="summary-row"><span>${ui("breadth")}</span><strong>x${metrics.breadth}</strong></div>
     <div class="summary-row"><span>${ui("delivery")}</span><strong>${metrics.deliveryDays} ${ui("days")}</strong></div>
-    <div class="summary-row"><span>${ui("support")}</span><strong>${money(metrics.mrr, state.currency)}</strong></div>
-    <div class="summary-row"><span>${ui("yearly")}</span><strong>${money(metrics.arr, state.currency)}</strong></div>
-    <div class="summary-row"><span>${ui("ltv")}</span><strong>${money(metrics.ltv, state.currency)}</strong></div>
+    ${supportRows}
     <div class="summary-row"><span>${ui("profit")}</span><strong>${money(metrics.profit, state.currency)} · ${metrics.margin}%</strong></div>
-    <div class="summary-row"><span>Lead score</span><strong>${metrics.score}/100</strong></div>
+    <div class="summary-row"><span>${ui("leadScore")}</span><strong>${metrics.score}/100</strong></div>
   `;
 }
 
@@ -192,7 +193,6 @@ function bind() {
     const input = event.target;
     if (input.matches("[data-lang-select]")) state.lang = input.value;
     if (input.matches("[data-currency]")) state.currency = input.value;
-    if (input.matches("[data-tier]")) state.tier = input.value;
     if (input.matches("[data-delivery]")) state.delivery = input.value;
     if (input.matches("[data-support]")) state.support = input.value;
     if (input.matches("[data-options] input")) {

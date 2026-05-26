@@ -1,23 +1,29 @@
 // Bu modul GLOBAL PRO kalkulyatorunun qiymət, müddət, CRM payload və lokal demo data məntiqini idarə edir.
-import { currencies, delivery, i18n, languages, serviceCatalog, support, tiers } from "../data/catalog.js";
+import { currencies, delivery, i18n, languages, serviceCatalog, support } from "../data/catalog.js";
 
 // Başlanğıc seçim vəziyyəti bütün səhifələr üçün eyni localStorage açarı ilə saxlanılır.
 export function defaultState() {
   return {
     lang: "az",
     currency: "AZN",
-    tier: "pro",
     delivery: "30d",
     support: "none",
     activeGroup: "platform",
     selected: { platform: "corporate" },
     custom: [],
-    client: {}
+    client: {},
+    _schemaVersion: 2
   };
 }
 
 export function loadState() {
-  return { ...defaultState(), ...JSON.parse(localStorage.getItem("sp_global_state") || "{}") };
+  const stored = JSON.parse(localStorage.getItem("sp_global_state") || "{}");
+  const state = { ...defaultState(), ...stored };
+  if (stored._schemaVersion !== 2) {
+    state.support = "none";
+    state._schemaVersion = 2;
+  }
+  return state;
 }
 
 export function saveState(state) {
@@ -76,7 +82,6 @@ export function selectedItems(state) {
 }
 
 export function calculate(state) {
-  const tier = tiers.find((item) => item.id === state.tier) || tiers[1];
   const deliveryMode = delivery.find((item) => item.id === state.delivery) || delivery[2];
   const supportPlan = support.find((item) => item.id === state.support) || support[0];
   const items = selectedItems(state);
@@ -101,7 +106,7 @@ export function calculate(state) {
   const margin = total ? Number(((profit / total) * 100).toFixed(1)) : 0;
   const score = Math.min(100, Math.round(18 + items.length * 1.25 + total / 1200 + (mrr ? 9 : 0)));
   const ltv = Math.round(total + arr * 2.6);
-  return { tier, deliveryMode, supportPlan, items, raw, complexity: Number(complexity.toFixed(3)), breadth: Number(breadth.toFixed(3)), total, deliveryDays, mrr, arr, infrastructure, profit, margin, score, ltv };
+  return { deliveryMode, supportPlan, items, raw, complexity: Number(complexity.toFixed(3)), breadth: Number(breadth.toFixed(3)), total, deliveryDays, mrr, arr, infrastructure, profit, margin, score, ltv };
 }
 
 export function payload(state) {

@@ -176,28 +176,6 @@ export const serviceCatalog = [
   ...buildCatalog()
 ];
 
-export const demoCustomerAssets = {
-  domains: [
-    { domain: "example.az", expires: "2026-06-18", ssl: "Aktiv", hosting: "Cloud PRO" },
-    { domain: "shop-example.com", expires: "2026-07-04", ssl: "Yenilənməlidir", hosting: "E-commerce VPS" }
-  ],
-  emails: [
-    { address: "info@example.az", storage: "8.4 GB / 30 GB", status: "Aktiv" },
-    { address: "sales@example.az", storage: "12.1 GB / 30 GB", status: "Aktiv" },
-    { address: "support@example.az", storage: "4.7 GB / 30 GB", status: "Aktiv" }
-  ],
-  payments: [
-    { title: "Domain renewal", due: "2026-06-18", amount: 45, status: "Gözləyir" },
-    { title: "Monthly SLA", due: "2026-06-01", amount: 280, status: "Yaxınlaşır" },
-    { title: "Hosting", due: "2026-06-12", amount: 120, status: "Gözləyir" }
-  ],
-  projects: [
-    { title: "Corporate website redesign", progress: 82, status: "Client Review" },
-    { title: "SEO growth package", progress: 44, status: "Active" },
-    { title: "Payment gateway integration", progress: 61, status: "QA" }
-  ]
-};
-
 export function stats() {
   return {
     groups: serviceCatalog.length,

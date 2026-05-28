@@ -5,14 +5,6 @@ import { createManualProject, loadAdminProjects, loadCatalogOverrides, saveCatal
 
 const statuses = ["Lead", "Qualified", "Proposal", "Contract", "Development", "QA", "Live", "Support", "Renewal-Due", "Overdue"];
 
-const demoDeals = [
-  { client: "Caspian Retail", project: "Marketplace + ERP", status: "Development", total: 38500, mrr: 650, profit: 29100, domain: "caspianretail.az", renewal: "2026-06-12" },
-  { client: "MedCloud", project: "Clinic SaaS", status: "QA", total: 46200, mrr: 1400, profit: 35200, domain: "medcloud.az", renewal: "2026-07-04" },
-  { client: "LegalPro", project: "Corporate + Client Portal", status: "Live", total: 14800, mrr: 280, profit: 11200, domain: "legalpro.az", renewal: "2026-06-22" },
-  { client: "EduNova", project: "LMS + Mobile PWA", status: "Support", total: 32200, mrr: 650, profit: 24600, domain: "edunova.com", renewal: "2026-08-01" },
-  { client: "BuildMax", project: "Construction ERP", status: "Renewal-Due", total: 51800, mrr: 1400, profit: 39600, domain: "buildmax.az", renewal: "2026-06-02" }
-];
-
 async function deals() {
   const remote = await loadAdminProjects();
   if (remote.ok && remote.data.length) {
@@ -38,7 +30,7 @@ async function deals() {
     renewal: "planlaşdırılır"
   }));
   const manual = JSON.parse(localStorage.getItem("sp_global_manual_deals") || "[]");
-  return [...manual, ...leads, ...demoDeals];
+  return [...manual, ...leads];
 }
 
 function kpis(rows) {
@@ -60,6 +52,10 @@ function renderKpis(rows) {
 function renderTable(rows) {
   const body = document.querySelector("[data-ledger]");
   if (!body) return;
+  if (!rows.length) {
+    body.innerHTML = `<tr><td colspan="9" class="muted">Hələ real layihə əlavə edilməyib. Yuxarıdakı formadan satılmış layihəni əlavə edin və ya kalkulyatordan lead göndərin.</td></tr>`;
+    return;
+  }
   body.innerHTML = rows.map((row, index) => `
     <tr>
       <td>${row.client}</td>
@@ -177,13 +173,13 @@ async function saveCatalog() {
 document.addEventListener("DOMContentLoaded", () => {
   refresh();
   renderCatalogEditor();
-  document.addEventListener("click", (event) => {
+  document.addEventListener("click", async (event) => {
     if (event.target.closest("[data-add-deal]")) addManualDeal();
     if (event.target.closest("[data-save-catalog]")) saveCatalog();
     const status = event.target.closest("[data-status]");
     if (status) {
       const manual = JSON.parse(localStorage.getItem("sp_global_manual_deals") || "[]");
-      const rows = deals();
+      const rows = await deals();
       const row = rows[Number(status.dataset.status)];
       row.status = statuses[(statuses.indexOf(row.status) + 1) % statuses.length] || "Lead";
       manual.unshift(row);

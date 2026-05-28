@@ -1,4 +1,4 @@
-// Bu modul GLOBAL PRO kalkulyatorunun qiymət, müddət, CRM payload və lokal demo data məntiqini idarə edir.
+// Bu modul GLOBAL PRO kalkulyatorunun qiymət, müddət, CRM payload və lokal ehtiyat data məntiqini idarə edir.
 import { currencies, delivery, i18n, languages, serviceCatalog, support } from "../data/catalog.js";
 
 // Başlanğıc seçim vəziyyəti bütün səhifələr üçün eyni localStorage açarı ilə saxlanılır.
@@ -161,7 +161,7 @@ export function loadLeads() {
   return JSON.parse(localStorage.getItem("sp_global_leads") || "[]");
 }
 
-export function requestPushDemo(title, body) {
+export function requestPushNotification(title, body) {
   if (!("Notification" in window)) return Promise.resolve("unsupported");
   return Notification.requestPermission().then((permission) => {
     if (permission === "granted") new Notification(title, { body, icon: "public/assets/icon.svg" });

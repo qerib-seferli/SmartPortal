@@ -31,14 +31,16 @@
             <p class="lead" data-i18n="heroText">Çoxdilli, çoxvalyutalı, 480+ seçimli qiymət matrisi, CRM, ERP, müştəri kabineti, domain/e-mail/ödəniş izləmə və push xatırlatma sistemi.</p>
             <div class="nav">
               <a class="btn primary" href="#matrix" data-i18n="start">Kalkulyatoru aç</a>
-              <button class="btn hot" type="button" data-push-demo>Push demo</button>
+              <button class="btn hot" type="button" data-push-enable>Bildirişləri aktiv et</button>
               <a class="btn" href="admin.html">ERP/CRM</a>
             </div>
             <div class="stats" data-stats></div>
           </div>
-          <aside class="stage glass">
-            <div class="code-terminal">
-              <div class="terminal-top"><span></span><span></span><span></span><strong>deploy.log</strong></div>
+          <aside class="stage glass premium-stage">
+            <div class="stage-grid"></div>
+            <div class="stage-scan"></div>
+            <div class="code-terminal holo-terminal">
+              <div class="terminal-top"><span></span><span></span><span></span><strong>production.deploy</strong></div>
               <pre class="code-stream">const studio = new SeniorFullStackDeveloper({
   market: "global",
   languages: 12,
@@ -64,21 +66,80 @@ await studio.deploy("production");
 // optimizing UI density...
 // ready.</pre>
             </div>
-            <div class="developer-card glass">
+            <div class="holo-cube" aria-hidden="true">
+              <span class="cube-face cube-front">AI</span>
+              <span class="cube-face cube-back">ERP</span>
+              <span class="cube-face cube-right">CRM</span>
+              <span class="cube-face cube-left">PWA</span>
+              <span class="cube-face cube-top">API</span>
+              <span class="cube-face cube-bottom">UX</span>
+            </div>
+            <div class="developer-card glass command-card">
               <div class="avatar">FS</div>
-              <h2>Full Stack Command Center</h2>
-              <p class="muted">Satış, layihə, ödəniş və müştəri xidməti tək paneldə.</p>
+              <div>
+                <p class="eyebrow">LIVE COMMAND CENTER</p>
+                <h2>Full Stack Command Center</h2>
+                <p class="muted">Satış, layihə, ödəniş və müştəri xidməti tək paneldə.</p>
+              </div>
+              <div class="signal-list">
+                <span><b></b> Supabase realtime</span>
+                <span><b></b> CRM lead sync</span>
+                <span><b></b> PWA push ready</span>
+              </div>
+            </div>
+            <div class="stage-metrics">
+              <span><strong>975+</strong> modules</span>
+              <span><strong>12</strong> languages</span>
+              <span><strong>10</strong> currencies</span>
             </div>
           </aside>
         </section>
 
-        <section class="section">
-          <div class="section-head"><div><p class="eyebrow">Platforma</p><h2>Əsas imkanlar</h2></div></div>
-          <div class="cards">
-            <article class="card glass"><h3>🔐 Auth</h3><p>Login, qeydiyyat və parol bərpası.</p></article>
-            <article class="card glass"><h3>📱 Portal</h3><p>Domain, email, ödəniş və layihələr.</p></article>
-            <article class="card glass"><h3>🔔 Reminder</h3><p>Renewal və aylıq ödəniş xəbərdarlıqları.</p></article>
-            <article class="card glass"><h3>🌍 Global</h3><p>Çox dil və çox valyuta dəstəyi.</p></article>
+        <section class="section capability-section">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">Platforma</p>
+              <h2>Enterprise idarəetmə imkanları</h2>
+            </div>
+            <p class="section-copy">Satış, layihə, müştəri xidməti və maliyyə əməliyyatlarını tək peşəkar sistemdə birləşdirən real iş axını.</p>
+          </div>
+          <div class="cards capability-grid">
+            <article class="card glass capability-card">
+              <span class="card-icon">🔐</span>
+              <h3>Müştəri identifikasiyası</h3>
+              <p>Qeydiyyat, giriş, parol bərpası və təhlükəsiz müştəri profili Supabase Auth üzərindən idarə olunur.</p>
+              <span class="card-meta">Auth · Profile · Access</span>
+            </article>
+            <article class="card glass capability-card">
+              <span class="card-icon">📊</span>
+              <h3>CRM və layihə pipeline</h3>
+              <p>Lead-lər kalkulyatordan CRM bazasına düşür, statuslar admin paneldə idarə olunur və satış dəyəri izlənir.</p>
+              <span class="card-meta">Lead · Status · Ledger</span>
+            </article>
+            <article class="card glass capability-card">
+              <span class="card-icon">🌐</span>
+              <h3>Müştəri portalı</h3>
+              <p>Domain, SSL, email, ödəniş, sənəd və support məlumatları müştəri hesabına bağlı real kabinetdə göstərilir.</p>
+              <span class="card-meta">Domain · Billing · Support</span>
+            </article>
+            <article class="card glass capability-card">
+              <span class="card-icon">💳</span>
+              <h3>Maliyyə və yenilənmə nəzarəti</h3>
+              <p>Aylıq dəstək, invoice, renewal tarixləri və gəlir göstəriciləri admin dashboard-da operativ izlənir.</p>
+              <span class="card-meta">MRR · Invoice · Renewal</span>
+            </article>
+            <article class="card glass capability-card">
+              <span class="card-icon">🔔</span>
+              <h3>Bildiriş avtomatlaşdırması</h3>
+              <p>Domain, hosting, SSL və aylıq xidmət vaxtı yaxınlaşanda müştəriyə push və email xatırlatma modeli hazırdır.</p>
+              <span class="card-meta">Push · Email · Queue</span>
+            </article>
+            <article class="card glass capability-card">
+              <span class="card-icon">🌍</span>
+              <h3>Global satış infrastrukturu</h3>
+              <p>Çoxdilli, çoxvalyutalı qiymət matrisi və 975+ seçimli xidmət kataloqu beynəlxalq müştəri axını üçün qurulub.</p>
+              <span class="card-meta">12 Dil · 10 Valyuta · 975+</span>
+            </article>
           </div>
         </section>
 

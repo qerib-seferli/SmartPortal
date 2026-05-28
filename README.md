@@ -1,6 +1,6 @@
 # SmartPortal GLOBAL PRO
 
-Bu v3 versiya GitHub layihələrinin yanına yükləmək və Supabase SQL-i run etmək üçün hazırlanmış tam statik PWA prototipidir.
+Bu versiya GitHub layihələrinin yanına yükləmək və Supabase SQL-i run etmək üçün hazırlanmış tam statik PWA/SaaS platformasıdır.
 
 ## Əsaslar
 
@@ -10,7 +10,7 @@ Bu v3 versiya GitHub layihələrinin yanına yükləmək və Supabase SQL-i run 
 - Login, qeydiyyat, parolu unutdum səhifəsi
 - Müştəri portalı: domain, SSL, hosting, email, ödəniş, layihə statusu, sənəd və support modeli
 - Admin ERP/CRM: satılmış layihə əlavə etmə, pipeline, MRR, ARR, profit, domain renewal
-- Push notification demo
+- Push notification və renewal xəbərdarlıq modeli
 - Supabase üçün `supabase-global-pro.sql`
 
 ## Lokal Açılış
@@ -28,7 +28,7 @@ URL-lər:
 
 ## Supabase
 
-Supabase SQL Editor daxilində `supabase-global-pro.sql` faylını run edin. Bu prototip hazırda localStorage demo rejimdə işləyir; növbəti mərhələdə Supabase JS client əlavə edib real auth, project insert, portal data və push token yazılışını aktivləşdirmək olar.
+Supabase SQL Editor daxilində `supabase-global-pro.sql` faylını run edin. Sayt Supabase qoşulanda real auth, lead insert, portal data, admin project insert və push token yazılışları ilə işləyir; Supabase bağlantısı kəsilərsə lead-lər lokal ehtiyat yaddaşa saxlanır.
 
 Sonra real auth, lead insert, portal RPC və katalog qiymət redaktoru üçün bu faylı da run edin:
 

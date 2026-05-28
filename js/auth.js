@@ -1,4 +1,4 @@
-// Bu fayl demo auth ekranında login, qeydiyyat və parolu unutdum tab-larını idarə edir.
+// Bu fayl auth ekranında login, qeydiyyat və parolu unutdum tab-larını idarə edir.
 import { applyLanguage, loadState } from "./core.js";
 import { resetPassword, signIn, signUp, updatePassword } from "./supabase-client.js";
 

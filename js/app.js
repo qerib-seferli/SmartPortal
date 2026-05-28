@@ -7,10 +7,10 @@ let state = loadState();
 const $ = (selector) => document.querySelector(selector);
 
 const uiText = {
-  az: { selected: "Seçilmiş modul", complexity: "Komplekslik", breadth: "Scope genişliyi", delivery: "Təhvil planı", support: "Aylıq dəstək", yearly: "İllik dəstək", ltv: "2 illik dəyər", noSupport: "Dəstək seçilməyib", profit: "Mənfəət", leadScore: "Lead score", days: "iş günü", shortDays: "gün", platformHint: "Ana platforma tipini seçin.", groupHint: "seçim: lazım olan hər şeyi seçə bilərsiniz.", sending: "Lead göndərilir...", sent: "Lead Supabase CRM bazasına əlavə olundu.", fallback: "Lead lokal ehtiyat yaddaşa saxlandı.", name: "Ad Soyad", company: "Şirkət", phone: "Telefon", industry: "Sahə", notes: "Əlavə qeyd", selectedList: "Seçilənlər", customName: "Müştərinin xüsusi istəyi", price: "Qiymət", dayInput: "Gün", add: "Əlavə et" },
-  en: { selected: "Selected modules", complexity: "Complexity", breadth: "Scope breadth", delivery: "Delivery plan", support: "Monthly support", yearly: "Yearly support", ltv: "2-year value", noSupport: "No support selected", profit: "Profit", leadScore: "Lead score", days: "business days", shortDays: "days", platformHint: "Choose the main platform type.", groupHint: "options: select everything you need.", sending: "Sending lead...", sent: "Lead was added to Supabase CRM.", fallback: "Lead was saved to local backup storage.", name: "Full name", company: "Company", phone: "Phone", industry: "Industry", notes: "Notes", selectedList: "Selected", customName: "Custom client request", price: "Price", dayInput: "Days", add: "Add" },
-  tr: { selected: "Seçilen modül", complexity: "Karmaşıklık", breadth: "Scope genişliği", delivery: "Teslim planı", support: "Aylık destek", yearly: "Yıllık destek", ltv: "2 yıllık değer", noSupport: "Destek seçilmedi", profit: "Kâr", leadScore: "Lead skoru", days: "iş günü", shortDays: "gün", platformHint: "Ana platform tipini seçin.", groupHint: "seçenek: ihtiyacınız olan her şeyi seçin.", sending: "Lead gönderiliyor...", sent: "Lead Supabase CRM'e eklendi.", fallback: "Lead yerel yedek hafızaya kaydedildi.", name: "Ad Soyad", company: "Şirket", phone: "Telefon", industry: "Sektör", notes: "Notlar", selectedList: "Seçilenler", customName: "Müşterinin özel isteği", price: "Fiyat", dayInput: "Gün", add: "Ekle" },
-  ru: { selected: "Выбранные модули", complexity: "Сложность", breadth: "Ширина scope", delivery: "План сдачи", support: "Ежемесячная поддержка", yearly: "Годовая поддержка", ltv: "Ценность за 2 года", noSupport: "Поддержка не выбрана", profit: "Прибыль", leadScore: "Оценка лида", days: "рабочих дней", shortDays: "дн.", platformHint: "Выберите тип платформы.", groupHint: "опций: выберите все нужное.", sending: "Отправка лида...", sent: "Лид добавлен в Supabase CRM.", fallback: "Лид сохранен в локальное резервное хранилище.", name: "Имя", company: "Компания", phone: "Телефон", industry: "Сфера", notes: "Комментарий", selectedList: "Выбрано", customName: "Особое пожелание клиента", price: "Цена", dayInput: "Дни", add: "Добавить" }
+  az: { selected: "Seçilmiş modul", complexity: "Komplekslik", breadth: "Scope genişliyi", delivery: "Təhvil planı", support: "Aylıq dəstək", yearly: "İllik dəstək", ltv: "2 illik dəyər", noSupport: "Dəstək seçilməyib", profit: "Mənfəət", leadScore: "Lead score", days: "iş günü", shortDays: "gün", platformHint: "Ana platforma tipini seçin.", groupHint: "seçim: lazım olan hər şeyi seçə bilərsiniz.", sending: "Lead göndərilir...", sent: "Lead Supabase CRM bazasına əlavə olundu.", fallback: "Lead lokal ehtiyat yaddaşa saxlandı.", name: "Ad Soyad", company: "Şirkət", phone: "Telefon", industry: "Sahə", notes: "Əlavə qeyd", selectedList: "Seçilənlər", customName: "Müştərinin xüsusi istəyi", price: "Qiymət", dayInput: "Gün", add: "Əlavə et", statsModules: "Seçim və modul", statsGroups: "Böyük bölmə", statsLangs: "Dil", statsCurrencies: "Valyuta" },
+  en: { selected: "Selected modules", complexity: "Complexity", breadth: "Scope breadth", delivery: "Delivery plan", support: "Monthly support", yearly: "Yearly support", ltv: "2-year value", noSupport: "No support selected", profit: "Profit", leadScore: "Lead score", days: "business days", shortDays: "days", platformHint: "Choose the main platform type.", groupHint: "options: select everything you need.", sending: "Sending lead...", sent: "Lead was added to Supabase CRM.", fallback: "Lead was saved to local backup storage.", name: "Full name", company: "Company", phone: "Phone", industry: "Industry", notes: "Notes", selectedList: "Selected", customName: "Custom client request", price: "Price", dayInput: "Days", add: "Add", statsModules: "Options and modules", statsGroups: "Major sections", statsLangs: "Languages", statsCurrencies: "Currencies" },
+  tr: { selected: "Seçilen modül", complexity: "Karmaşıklık", breadth: "Scope genişliği", delivery: "Teslim planı", support: "Aylık destek", yearly: "Yıllık destek", ltv: "2 yıllık değer", noSupport: "Destek seçilmedi", profit: "Kâr", leadScore: "Lead skoru", days: "iş günü", shortDays: "gün", platformHint: "Ana platform tipini seçin.", groupHint: "seçenek: ihtiyacınız olan her şeyi seçin.", sending: "Lead gönderiliyor...", sent: "Lead Supabase CRM'e eklendi.", fallback: "Lead yerel yedek hafızaya kaydedildi.", name: "Ad Soyad", company: "Şirket", phone: "Telefon", industry: "Sektör", notes: "Notlar", selectedList: "Seçilenler", customName: "Müşterinin özel isteği", price: "Fiyat", dayInput: "Gün", add: "Ekle", statsModules: "Seçim ve modül", statsGroups: "Büyük bölüm", statsLangs: "Dil", statsCurrencies: "Para birimi" },
+  ru: { selected: "Выбранные модули", complexity: "Сложность", breadth: "Ширина scope", delivery: "План сдачи", support: "Ежемесячная поддержка", yearly: "Годовая поддержка", ltv: "Ценность за 2 года", noSupport: "Поддержка не выбрана", profit: "Прибыль", leadScore: "Оценка лида", days: "рабочих дней", shortDays: "дн.", platformHint: "Выберите тип платформы.", groupHint: "опций: выберите все нужное.", sending: "Отправка лида...", sent: "Лид добавлен в Supabase CRM.", fallback: "Лид сохранен в локальное резервное хранилище.", name: "Имя", company: "Компания", phone: "Телефон", industry: "Сфера", notes: "Комментарий", selectedList: "Выбрано", customName: "Особое пожелание клиента", price: "Цена", dayInput: "Дни", add: "Добавить", statsModules: "Опции и модули", statsGroups: "Крупные разделы", statsLangs: "Языки", statsCurrencies: "Валюты" }
 };
 
 const groupTranslations = {
@@ -124,10 +124,10 @@ function renderStats() {
   const root = $("[data-stats]");
   if (!root) return;
   root.innerHTML = [
-    [s.modules, "Seçim və modul"],
-    [s.groups, "Böyük bölmə"],
-    [s.languages, "Dil"],
-    [s.currencies, "Valyuta"]
+    [s.modules, ui("statsModules")],
+    [s.groups, ui("statsGroups")],
+    [s.languages, ui("statsLangs")],
+    [s.currencies, ui("statsCurrencies")]
   ].map(([value, label]) => `<article class="stat glass"><strong>${value}+</strong><span>${label}</span></article>`).join("");
 }
 
@@ -292,6 +292,7 @@ function bind() {
 
 function renderAll() {
   applyLanguage(state.lang);
+  renderStats();
   renderGroups();
   renderOptions();
   renderSummary();

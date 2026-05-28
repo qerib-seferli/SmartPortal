@@ -31,7 +31,7 @@
             <p class="lead" data-i18n="heroText">Çoxdilli, çoxvalyutalı, 480+ seçimli qiymət matrisi, CRM, ERP, müştəri kabineti, domain/e-mail/ödəniş izləmə və push xatırlatma sistemi.</p>
             <div class="nav">
               <a class="btn primary" href="#matrix" data-i18n="start">Kalkulyatoru aç</a>
-              <button class="btn hot" type="button" data-push-enable>Bildirişləri aktiv et</button>
+              <button class="btn hot" type="button" data-push-enable data-i18n="notifyEnable">Bildirişləri aktiv et</button>
               <a class="btn" href="admin.html">ERP/CRM</a>
             </div>
             <div class="stats" data-stats></div>
@@ -41,30 +41,50 @@
             <div class="stage-scan"></div>
             <div class="code-terminal holo-terminal">
               <div class="terminal-top"><span></span><span></span><span></span><strong>production.deploy</strong></div>
-              <pre class="code-stream">const studio = new SeniorFullStackDeveloper({
-  market: "global",
-  languages: 12,
-  currencies: 10,
-  modules: "975+",
-  crm: true,
-  erp: true,
-  clientPortal: true,
-  pushReminders: true
+              <div class="code-window" aria-label="SmartPortal production code stream">
+                <div class="code-loop">
+                  <pre class="code-stream"><span class="tok-key">const</span> studio <span class="tok-op">=</span> <span class="tok-key">new</span> SeniorFullStackDeveloper({
+  market: <span class="tok-str">"global"</span>,
+  tenantMode: <span class="tok-str">"multi-client"</span>,
+  languages: <span class="tok-num">12</span>,
+  currencies: <span class="tok-num">10</span>,
+  catalogModules: <span class="tok-str">"975+"</span>,
+  realtimeCRM: <span class="tok-bool">true</span>,
+  financialLedger: <span class="tok-bool">true</span>,
+  clientPortal: <span class="tok-bool">true</span>,
+  pushReminders: <span class="tok-bool">true</span>
 });
 
-await auth.enable(["login", "signup", "reset"]);
-await pricing.loadMatrix("global-pro");
-await crm.createLead(payload);
-await portal.syncDomains(clientId);
-await billing.scheduleRenewals();
-await notifications.push("payment_due");
-await dashboard.refresh("admin");
-await studio.deploy("production");
+<span class="tok-key">await</span> auth.enable([<span class="tok-str">"login"</span>, <span class="tok-str">"signup"</span>, <span class="tok-str">"reset"</span>, <span class="tok-str">"magic-link"</span>]);
+<span class="tok-key">await</span> pricing.loadMatrix(<span class="tok-str">"global-pro"</span>, { cache: <span class="tok-str">"edge"</span> });
+<span class="tok-key">await</span> crm.createLead(payload).then(syncPipeline);
+<span class="tok-key">await</span> portal.attachAssets(clientId, [<span class="tok-str">"domains"</span>, <span class="tok-str">"mailboxes"</span>, <span class="tok-str">"invoices"</span>]);
+<span class="tok-key">await</span> billing.scheduleRenewals({ notifyBeforeDays: [<span class="tok-num">30</span>, <span class="tok-num">14</span>, <span class="tok-num">3</span>] });
+<span class="tok-key">await</span> notifications.queue(<span class="tok-str">"payment_due"</span>, channels.pushEmail());
+<span class="tok-key">await</span> dashboard.refresh([<span class="tok-str">"pipeline"</span>, <span class="tok-str">"mrr"</span>, <span class="tok-str">"renewals"</span>]);
+<span class="tok-key">await</span> studio.deploy(<span class="tok-str">"production"</span>);</pre>
+                  <pre class="code-stream" aria-hidden="true"><span class="tok-key">const</span> studio <span class="tok-op">=</span> <span class="tok-key">new</span> SeniorFullStackDeveloper({
+  market: <span class="tok-str">"global"</span>,
+  tenantMode: <span class="tok-str">"multi-client"</span>,
+  languages: <span class="tok-num">12</span>,
+  currencies: <span class="tok-num">10</span>,
+  catalogModules: <span class="tok-str">"975+"</span>,
+  realtimeCRM: <span class="tok-bool">true</span>,
+  financialLedger: <span class="tok-bool">true</span>,
+  clientPortal: <span class="tok-bool">true</span>,
+  pushReminders: <span class="tok-bool">true</span>
+});
 
-// building components...
-// syncing Supabase policies...
-// optimizing UI density...
-// ready.</pre>
+<span class="tok-key">await</span> auth.enable([<span class="tok-str">"login"</span>, <span class="tok-str">"signup"</span>, <span class="tok-str">"reset"</span>, <span class="tok-str">"magic-link"</span>]);
+<span class="tok-key">await</span> pricing.loadMatrix(<span class="tok-str">"global-pro"</span>, { cache: <span class="tok-str">"edge"</span> });
+<span class="tok-key">await</span> crm.createLead(payload).then(syncPipeline);
+<span class="tok-key">await</span> portal.attachAssets(clientId, [<span class="tok-str">"domains"</span>, <span class="tok-str">"mailboxes"</span>, <span class="tok-str">"invoices"</span>]);
+<span class="tok-key">await</span> billing.scheduleRenewals({ notifyBeforeDays: [<span class="tok-num">30</span>, <span class="tok-num">14</span>, <span class="tok-num">3</span>] });
+<span class="tok-key">await</span> notifications.queue(<span class="tok-str">"payment_due"</span>, channels.pushEmail());
+<span class="tok-key">await</span> dashboard.refresh([<span class="tok-str">"pipeline"</span>, <span class="tok-str">"mrr"</span>, <span class="tok-str">"renewals"</span>]);
+<span class="tok-key">await</span> studio.deploy(<span class="tok-str">"production"</span>);</pre>
+                </div>
+              </div>
             </div>
             <div class="holo-cube" aria-hidden="true">
               <span class="cube-face cube-front">AI</span>
@@ -98,47 +118,47 @@ await studio.deploy("production");
         <section class="section capability-section">
           <div class="section-head">
             <div>
-              <p class="eyebrow">Platforma</p>
-              <h2>Enterprise idarəetmə imkanları</h2>
+              <p class="eyebrow" data-i18n="platformEyebrow">Platforma</p>
+              <h2 data-i18n="capabilityTitle">Enterprise idarəetmə imkanları</h2>
             </div>
-            <p class="section-copy">Satış, layihə, müştəri xidməti və maliyyə əməliyyatlarını tək peşəkar sistemdə birləşdirən real iş axını.</p>
+            <p class="section-copy" data-i18n="capabilityText">Satış, layihə, müştəri xidməti və maliyyə əməliyyatlarını tək peşəkar sistemdə birləşdirən real iş axını.</p>
           </div>
           <div class="cards capability-grid">
             <article class="card glass capability-card">
               <span class="card-icon">🔐</span>
-              <h3>Müştəri identifikasiyası</h3>
-              <p>Qeydiyyat, giriş, parol bərpası və təhlükəsiz müştəri profili Supabase Auth üzərindən idarə olunur.</p>
-              <span class="card-meta">Auth · Profile · Access</span>
+              <h3 data-i18n="capAuthTitle">Müştəri identifikasiyası</h3>
+              <p data-i18n="capAuthText">Qeydiyyat, giriş, parol bərpası və təhlükəsiz müştəri profili Supabase Auth üzərindən idarə olunur.</p>
+              <span class="card-meta" data-i18n="capAuthMeta">Auth · Profile · Access</span>
             </article>
             <article class="card glass capability-card">
               <span class="card-icon">📊</span>
-              <h3>CRM və layihə pipeline</h3>
-              <p>Lead-lər kalkulyatordan CRM bazasına düşür, statuslar admin paneldə idarə olunur və satış dəyəri izlənir.</p>
-              <span class="card-meta">Lead · Status · Ledger</span>
+              <h3 data-i18n="capCrmTitle">CRM və layihə pipeline</h3>
+              <p data-i18n="capCrmText">Lead-lər kalkulyatordan CRM bazasına düşür, statuslar admin paneldə idarə olunur və satış dəyəri izlənir.</p>
+              <span class="card-meta" data-i18n="capCrmMeta">Lead · Status · Ledger</span>
             </article>
             <article class="card glass capability-card">
               <span class="card-icon">🌐</span>
-              <h3>Müştəri portalı</h3>
-              <p>Domain, SSL, email, ödəniş, sənəd və support məlumatları müştəri hesabına bağlı real kabinetdə göstərilir.</p>
-              <span class="card-meta">Domain · Billing · Support</span>
+              <h3 data-i18n="capPortalTitle">Müştəri portalı</h3>
+              <p data-i18n="capPortalText">Domain, SSL, email, ödəniş, sənəd və support məlumatları müştəri hesabına bağlı real kabinetdə göstərilir.</p>
+              <span class="card-meta" data-i18n="capPortalMeta">Domain · Billing · Support</span>
             </article>
             <article class="card glass capability-card">
               <span class="card-icon">💳</span>
-              <h3>Maliyyə və yenilənmə nəzarəti</h3>
-              <p>Aylıq dəstək, invoice, renewal tarixləri və gəlir göstəriciləri admin dashboard-da operativ izlənir.</p>
-              <span class="card-meta">MRR · Invoice · Renewal</span>
+              <h3 data-i18n="capFinanceTitle">Maliyyə və yenilənmə nəzarəti</h3>
+              <p data-i18n="capFinanceText">Aylıq dəstək, invoice, renewal tarixləri və gəlir göstəriciləri admin dashboard-da operativ izlənir.</p>
+              <span class="card-meta" data-i18n="capFinanceMeta">MRR · Invoice · Renewal</span>
             </article>
             <article class="card glass capability-card">
               <span class="card-icon">🔔</span>
-              <h3>Bildiriş avtomatlaşdırması</h3>
-              <p>Domain, hosting, SSL və aylıq xidmət vaxtı yaxınlaşanda müştəriyə push və email xatırlatma modeli hazırdır.</p>
-              <span class="card-meta">Push · Email · Queue</span>
+              <h3 data-i18n="capNotifyTitle">Bildiriş avtomatlaşdırması</h3>
+              <p data-i18n="capNotifyText">Domain, hosting, SSL və aylıq xidmət vaxtı yaxınlaşanda müştəriyə push və email xatırlatma modeli hazırdır.</p>
+              <span class="card-meta" data-i18n="capNotifyMeta">Push · Email · Queue</span>
             </article>
             <article class="card glass capability-card">
               <span class="card-icon">🌍</span>
-              <h3>Global satış infrastrukturu</h3>
-              <p>Çoxdilli, çoxvalyutalı qiymət matrisi və 975+ seçimli xidmət kataloqu beynəlxalq müştəri axını üçün qurulub.</p>
-              <span class="card-meta">12 Dil · 10 Valyuta · 975+</span>
+              <h3 data-i18n="capGlobalTitle">Global satış infrastrukturu</h3>
+              <p data-i18n="capGlobalText">Çoxdilli, çoxvalyutalı qiymət matrisi və 975+ seçimli xidmət kataloqu beynəlxalq müştəri axını üçün qurulub.</p>
+              <span class="card-meta" data-i18n="capGlobalMeta">12 Dil · 10 Valyuta · 975+</span>
             </article>
           </div>
         </section>
@@ -146,7 +166,7 @@ await studio.deploy("production");
         <section class="section" id="matrix">
           <div class="section-head">
             <div><p class="eyebrow" data-i18n="live">Canlı hesab</p><h2 data-i18n="matrixTitle">GLOBAL PRO 480+ seçim kalkulyatoru</h2></div>
-            <button class="btn" type="button" data-reset>Sıfırla</button>
+            <button class="btn" type="button" data-reset data-i18n="reset">Sıfırla</button>
           </div>
           <div class="matrix">
             <aside class="rail glass" data-groups></aside>

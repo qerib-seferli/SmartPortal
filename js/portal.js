@@ -4,27 +4,27 @@ import { getSession, loadMyPortal, signOut } from "./supabase-client.js";
 
 const portalText = {
   az: {
-    home: "Ana səhifə", login: "Daxil ol", logout: "Çıxış", eyebrow: "Müştəri kabineti", title: "Layihə məlumatları", push: "Bildirişləri aktiv et",
-    domains: "🌐 Domain və SSL", emails: "✉️ Email ünvanları", payments: "💳 Ödənişlər", projects: "🚀 Layihələr", docs: "📄 Sənədlər",
-    ticket: "Yeni ticket", ticketText: "Dəyişiklik və texniki dəstək.", docsText: "Müqavilə, invoice və təhvil faylları.",
+    brand: "Müştəri portalı", home: "Ana səhifə", login: "Daxil ol", logout: "Çıxış", eyebrow: "Müştəri kabineti", title: "Layihə məlumatları", push: "Bildirişləri aktiv et",
+    domains: "🌐 Domain və SSL", emails: "✉️ Email ünvanları", payments: "💳 Ödənişlər", projects: "🚀 Layihələr", support: "🎫 Support", docs: "📄 Sənədlər",
+    ticket: "Yeni ticket", ticketText: "Dəyişiklik və texniki dəstək.", vault: "Sənəd arxivi", docsText: "Müqavilə, invoice və təhvil faylları.",
     expires: "Bitmə", active: "Aktiv", waiting: "Gözləyir", soon: "Yaxınlaşır", empty: "Məlumat hələ əlavə edilməyib. Admin paneldən müştəri layihəsinə real məlumat bağlayın."
   },
   en: {
-    home: "Home", login: "Sign in", logout: "Sign out", eyebrow: "Client portal", title: "Project details", push: "Enable reminders",
-    domains: "🌐 Domains and SSL", emails: "✉️ Email accounts", payments: "💳 Payments", projects: "🚀 Projects", docs: "📄 Documents",
-    ticket: "New ticket", ticketText: "Changes and technical support.", docsText: "Contracts, invoices and delivery files.",
+    brand: "Client Portal", home: "Home", login: "Sign in", logout: "Sign out", eyebrow: "Client portal", title: "Project details", push: "Enable reminders",
+    domains: "🌐 Domains and SSL", emails: "✉️ Email accounts", payments: "💳 Payments", projects: "🚀 Projects", support: "🎫 Support", docs: "📄 Documents",
+    ticket: "New ticket", ticketText: "Changes and technical support.", vault: "Document vault", docsText: "Contracts, invoices and delivery files.",
     expires: "Expires", active: "Active", waiting: "Pending", soon: "Due soon", empty: "No data has been added yet. Connect real client records from the admin panel."
   },
   ru: {
-    home: "Главная", login: "Войти", logout: "Выйти", eyebrow: "Кабинет клиента", title: "Данные проекта", push: "Включить уведомления",
-    domains: "🌐 Домены и SSL", emails: "✉️ Почтовые ящики", payments: "💳 Платежи", projects: "🚀 Проекты", docs: "📄 Документы",
-    ticket: "Новый тикет", ticketText: "Изменения и техническая поддержка.", docsText: "Договоры, счета и файлы сдачи.",
+    brand: "Кабинет клиента", home: "Главная", login: "Войти", logout: "Выйти", eyebrow: "Кабинет клиента", title: "Данные проекта", push: "Включить уведомления",
+    domains: "🌐 Домены и SSL", emails: "✉️ Почтовые ящики", payments: "💳 Платежи", projects: "🚀 Проекты", support: "🎫 Поддержка", docs: "📄 Документы",
+    ticket: "Новый тикет", ticketText: "Изменения и техническая поддержка.", vault: "Архив документов", docsText: "Договоры, счета и файлы сдачи.",
     expires: "Истекает", active: "Активно", waiting: "Ожидает", soon: "Скоро", empty: "Данные пока не добавлены. Подключите реальные записи клиента из админ-панели."
   },
   tr: {
-    home: "Ana sayfa", login: "Giriş", logout: "Çıkış", eyebrow: "Müşteri paneli", title: "Proje bilgileri", push: "Bildirimleri etkinleştir",
-    domains: "🌐 Domain ve SSL", emails: "✉️ Email hesapları", payments: "💳 Ödemeler", projects: "🚀 Projeler", docs: "📄 Belgeler",
-    ticket: "Yeni ticket", ticketText: "Değişiklik ve teknik destek.", docsText: "Sözleşme, fatura ve teslim dosyaları.",
+    brand: "Müşteri portalı", home: "Ana sayfa", login: "Giriş", logout: "Çıkış", eyebrow: "Müşteri paneli", title: "Proje bilgileri", push: "Bildirimleri etkinleştir",
+    domains: "🌐 Domain ve SSL", emails: "✉️ Email hesapları", payments: "💳 Ödemeler", projects: "🚀 Projeler", support: "🎫 Support", docs: "📄 Belgeler",
+    ticket: "Yeni ticket", ticketText: "Değişiklik ve teknik destek.", vault: "Belge arşivi", docsText: "Sözleşme, fatura ve teslim dosyaları.",
     expires: "Bitiş", active: "Aktif", waiting: "Bekliyor", soon: "Yaklaşıyor", empty: "Henüz veri eklenmedi. Admin panelinden gerçek müşteri kayıtlarını bağlayın."
   }
 };

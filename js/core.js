@@ -31,7 +31,7 @@ export function saveState(state) {
 }
 
 export function t(lang, key) {
-  return (i18n[lang] || i18n.az)[key] || i18n.az[key] || key;
+  return (i18n[lang] || i18n.en || i18n.az)[key] || i18n.en?.[key] || i18n.az[key] || key;
 }
 
 export function applyLanguage(lang) {

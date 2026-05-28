@@ -40,7 +40,7 @@
             <div class="stage-grid"></div>
             <div class="stage-scan"></div>
             <div class="code-terminal holo-terminal">
-              <div class="terminal-top"><span></span><span></span><span></span><strong>production.deploy</strong></div>
+              <div class="terminal-top"><span></span><span></span><span></span><strong data-i18n="stageTerminalTitle">production room</strong></div>
               <div class="code-window" aria-label="SmartPortal production code stream">
                 <div class="code-loop">
                   <pre class="code-stream"><span class="tok-key">const</span> studio <span class="tok-op">=</span> <span class="tok-key">new</span> SeniorFullStackDeveloper({
@@ -85,6 +85,9 @@
 <span class="tok-key">await</span> studio.deploy(<span class="tok-str">"production"</span>);</pre>
                 </div>
               </div>
+              <div class="terminal-glow-stack" aria-hidden="true">
+                <span></span><span></span><span></span><span></span>
+              </div>
             </div>
             <div class="holo-cube" aria-hidden="true">
               <span class="cube-face cube-front">AI</span>
@@ -97,20 +100,20 @@
             <div class="developer-card glass command-card">
               <div class="avatar">FS</div>
               <div>
-                <p class="eyebrow">LIVE COMMAND CENTER</p>
-                <h2>Full Stack Command Center</h2>
-                <p class="muted">Satış, layihə, ödəniş və müştəri xidməti tək paneldə.</p>
+                <p class="eyebrow" data-i18n="stageEyebrow">Canlı iş mərkəzi</p>
+                <h2 data-i18n="stageTitle">Full Stack idarəetmə paneli</h2>
+                <p class="muted" data-i18n="stageText">Satış, layihə, ödəniş və müştəri xidməti tək paneldə.</p>
               </div>
               <div class="signal-list">
-                <span><b></b> Supabase realtime</span>
-                <span><b></b> CRM lead sync</span>
-                <span><b></b> PWA push ready</span>
+                <span><b></b> <em data-i18n="stageSignalOne">Realtime baza</em></span>
+                <span><b></b> <em data-i18n="stageSignalTwo">CRM lead axını</em></span>
+                <span><b></b> <em data-i18n="stageSignalThree">Push bildiriş hazır</em></span>
               </div>
             </div>
             <div class="stage-metrics">
-              <span><strong>975+</strong> modules</span>
-              <span><strong>12</strong> languages</span>
-              <span><strong>10</strong> currencies</span>
+              <span><strong>975+</strong> <em data-i18n="stageMetricModules">modul</em></span>
+              <span><strong>12</strong> <em data-i18n="stageMetricLanguages">dil</em></span>
+              <span><strong>10</strong> <em data-i18n="stageMetricCurrencies">valyuta</em></span>
             </div>
           </aside>
         </section>

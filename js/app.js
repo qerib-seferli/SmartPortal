@@ -255,7 +255,15 @@ function bind() {
     if (event.target.closest("[data-submit-lead]")) submitLead();
     if (event.target.closest("[data-reset]")) {
       state = defaultState();
+      const leadForm = $("[data-lead-form]");
+      if (leadForm) leadForm.reset();
+      const notes = document.querySelector("[name='notes']");
+      if (notes) {
+        notes.value = "";
+        delete notes.dataset.touched;
+      }
       saveState(state);
+      applyLanguage(state.lang);
       renderTopControls();
       renderAll();
     }

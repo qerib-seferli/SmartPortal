@@ -9,7 +9,7 @@ async function deals() {
   const remote = await loadAdminProjects();
   if (remote.ok && remote.data.length) {
     return remote.data.map((row) => ({
-      client: row.sp_clients?.company_name || "Client",
+      client: row.sp_clients?.company_name || "Müştəri",
       project: row.title,
       status: row.status,
       total: row.total_azn,
@@ -21,7 +21,7 @@ async function deals() {
   }
   const leads = loadLeads().map((lead) => ({
     client: lead.client.company || lead.client.name || "Yeni lead",
-    project: lead.selections[0]?.module_title || "Custom Project",
+    project: lead.selections[0]?.module_title || "Layihə sorğusu",
     status: lead.deal.status,
     total: lead.deal.total_azn,
     mrr: lead.deal.mrr_azn,
@@ -81,6 +81,12 @@ function draw(canvas, rows) {
   canvas.height = h * ratio;
   ctx.scale(ratio, ratio);
   ctx.clearRect(0, 0, w, h);
+  if (!rows.length) {
+    ctx.fillStyle = "#9fb4ca";
+    ctx.font = "14px Inter, sans-serif";
+    ctx.fillText("Real layihə əlavə ediləndə gəlir qrafiki burada görünəcək.", 18, 42);
+    return;
+  }
   const max = Math.max(...rows.map((r) => r.total), 1);
   const gap = 12;
   const bw = Math.max(18, (w - gap * (rows.length + 1)) / rows.length);
@@ -104,20 +110,26 @@ async function addManualDeal() {
   const form = document.querySelector("[data-admin-form]");
   if (!form) return;
   const data = Object.fromEntries(new FormData(form).entries());
+  const notice = document.querySelector("[data-admin-notice]");
+  if (!data.client?.trim() || !data.project?.trim()) {
+    if (notice) notice.textContent = "Müştəri və layihə adı daxil edilməlidir.";
+    return;
+  }
   const rows = JSON.parse(localStorage.getItem("sp_global_manual_deals") || "[]");
   rows.unshift({
-    client: data.client || "Manual Client",
-    project: data.project || "Custom Project",
+    client: data.client.trim(),
+    project: data.project.trim(),
     status: data.status || "Lead",
     total: Number(data.total || 0),
     mrr: Number(data.mrr || 0),
     profit: Number(data.profit || 0),
-    domain: data.domain || "domain.az",
-    renewal: data.renewal || "2026-06-30"
+    domain: data.domain?.trim() || "təyin edilməyib",
+    renewal: data.renewal || "planlaşdırılır"
   });
   localStorage.setItem("sp_global_manual_deals", JSON.stringify(rows));
   await createManualProject(Object.fromEntries(new FormData(form).entries()));
   form.reset();
+  if (notice) notice.textContent = "Layihə əlavə olundu.";
   await refresh();
 }
 

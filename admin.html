@@ -37,8 +37,8 @@
           <section class="panel glass" id="sold">
             <h2>Satdığın layihəni admin bazasına əlavə et</h2>
             <form class="admin-form" data-admin-form>
-              <input class="field" name="client" placeholder="Müştəri">
-              <input class="field" name="project" placeholder="Layihə">
+              <input class="field" name="client" placeholder="Müştəri" required>
+              <input class="field" name="project" placeholder="Layihə" required>
               <select class="select" name="status"><option>Lead</option><option>Development</option><option>QA</option><option>Live</option><option>Support</option><option>Renewal-Due</option><option>Overdue</option></select>
               <input class="field" name="total" type="number" min="0" placeholder="Dəyər">
               <input class="field" name="mrr" type="number" min="0" placeholder="MRR">
@@ -47,6 +47,7 @@
               <input class="field" name="renewal" type="date">
               <button class="btn primary" type="button" data-add-deal>Əlavə et</button>
             </form>
+            <p class="muted" data-admin-notice></p>
           </section>
           <section class="panel glass" id="catalog">
             <h2>480+ kalkulyator seçimlərinin qiymət redaktoru</h2>

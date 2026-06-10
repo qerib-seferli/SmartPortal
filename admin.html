@@ -3,24 +3,30 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>SmartPortal GLOBAL PRO Admin</title>
+    <title>SmartPortal Admin</title>
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/admin.css">
   </head>
   <body>
     <div class="shell">
       <header class="topbar">
-        <a class="brand" href="index.html"><img src="public/assets/icon.svg" alt=""><span>GLOBAL PRO Admin</span></a>
-        <nav class="nav"><a class="btn" href="index.html">Frontend</a><a class="btn" href="portal.html">Portal</a><a class="btn primary" href="auth.html">Auth</a></nav>
+        <a class="brand" href="index.html"><img src="public/assets/icon.svg" alt=""><span>SmartPortal Admin</span></a>
+        <nav class="nav">
+          <a class="btn" href="index.html">Frontend</a>
+          <a class="btn" href="portal.html">Portal</a>
+          <a class="btn primary" href="auth.html">Auth</a>
+        </nav>
       </header>
+
       <main class="admin-layout">
         <aside class="side glass">
           <a class="active" href="#overview">Overview</a>
-          <a href="#sold">Satılmış layihələr</a>
-          <a href="#assets">Domain / Email</a>
-          <a href="#billing">Billing</a>
-          <a href="#automation">Push / Renewal</a>
+          <a href="#sold">Layihələr</a>
+          <a href="#catalog">Katalog</a>
+          <a href="#rates">Valyuta</a>
+          <a href="#data-manager">Database</a>
         </aside>
+
         <section class="admin-main">
           <section class="kpis" id="overview">
             <article class="kpi glass"><span>Pipeline</span><strong data-kpi="pipeline">₼0</strong></article>
@@ -30,41 +36,121 @@
             <article class="kpi glass"><span>Clients</span><strong data-kpi="clients">0</strong></article>
             <article class="kpi glass"><span>Renewals</span><strong data-kpi="renewals">0</strong></article>
           </section>
+
           <section class="grid-2">
-            <article class="panel glass"><h2>Revenue chart</h2><canvas data-chart></canvas></article>
-            <article class="panel glass" id="automation"><h2>Automation center</h2><p class="muted">Domain expiry, hosting, e-mail, SSL, monthly SLA və invoice tarixləri üçün push/email/WhatsApp queue modeli SQL-də hazırdır.</p></article>
+            <article class="panel glass">
+              <h2>Revenue</h2>
+              <canvas data-chart></canvas>
+            </article>
+            <article class="panel glass">
+              <h2>Automation</h2>
+              <p class="muted">Domain, hosting, SSL, e-mail, invoice və aylıq dəstək tarixləri Supabase cədvəllərində saxlanılır. Admin paneldən həmin sətirləri əlavə edib push/email növbəsi üçün real data hazırlaya bilərsiniz.</p>
+            </article>
           </section>
+
           <section class="panel glass" id="sold">
-            <h2>Satdığın layihəni admin bazasına əlavə et</h2>
+            <div class="panel-title">
+              <div>
+                <p class="eyebrow">Projects</p>
+                <h2>Satılmış layihəni bazaya əlavə et</h2>
+              </div>
+            </div>
             <form class="admin-form" data-admin-form>
-              <input class="field" name="client" placeholder="Müştəri" required>
-              <input class="field" name="project" placeholder="Layihə" required>
-              <select class="select" name="status"><option>Lead</option><option>Development</option><option>QA</option><option>Live</option><option>Support</option><option>Renewal-Due</option><option>Overdue</option></select>
-              <input class="field" name="total" type="number" min="0" placeholder="Dəyər">
-              <input class="field" name="mrr" type="number" min="0" placeholder="MRR">
-              <input class="field" name="profit" type="number" min="0" placeholder="Profit">
+              <input class="field" name="client" placeholder="Müştəri / Şirkət" required>
+              <input class="field" name="project" placeholder="Layihə adı" required>
+              <input class="field" name="email" type="email" placeholder="Müştəri emaili">
+              <input class="field" name="phone" placeholder="Telefon">
+              <select class="select" name="status">
+                <option>Lead</option><option>Qualified</option><option>Proposal</option><option>Contract</option>
+                <option>Development</option><option>QA</option><option>Live</option><option>Support</option>
+                <option>Renewal-Due</option><option>Overdue</option>
+              </select>
+              <input class="field" name="total" type="number" min="0" placeholder="Layihə dəyəri AZN">
+              <input class="field" name="mrr" type="number" min="0" placeholder="Aylıq dəstək AZN">
+              <input class="field" name="profit" type="number" min="0" placeholder="Mənfəət AZN">
               <input class="field" name="domain" placeholder="Domain">
               <input class="field" name="renewal" type="date">
               <button class="btn primary" type="button" data-add-deal>Əlavə et</button>
             </form>
             <p class="muted" data-admin-notice></p>
           </section>
+
           <section class="panel glass" id="catalog">
-            <h2>480+ kalkulyator seçimlərinin qiymət redaktoru</h2>
-            <form class="admin-form">
-              <select class="select" data-catalog-group></select>
-              <select class="select" data-catalog-item></select>
-              <input class="field" data-catalog-title placeholder="Modul adı">
-              <input class="field" data-catalog-price type="number" min="0" placeholder="Qiymət">
-              <input class="field" data-catalog-days type="number" min="0" placeholder="Gün">
+            <div class="panel-title">
+              <div>
+                <p class="eyebrow">Live catalog</p>
+                <h2>Kalkulyator seçimləri və çoxdilli qiymət bazası</h2>
+              </div>
+              <button class="btn" type="button" data-new-catalog>Yeni seçim</button>
+            </div>
+            <form class="admin-form pro-form">
+              <select class="select span-2" data-catalog-row></select>
+              <input class="field" data-catalog-id placeholder="ID" readonly>
+              <input class="field" data-catalog-group-key placeholder="group_key: platform">
+              <input class="field" data-catalog-group-title placeholder="Qrup adı: Ana platforma">
+              <select class="select" data-catalog-group-type><option value="radio">radio</option><option value="checkbox">checkbox</option></select>
+              <input class="field" data-catalog-icon placeholder="İkon">
+              <input class="field" data-catalog-module-key placeholder="module_key: corporate">
+              <input class="field" data-catalog-title placeholder="Modul adı AZ">
+              <input class="field" data-catalog-price type="number" min="0" placeholder="Qiymət AZN">
+              <input class="field" data-catalog-days type="number" min="0" placeholder="İş günü">
               <input class="field" data-catalog-complexity type="number" min="0.5" step="0.001" placeholder="Komplekslik">
-              <button class="btn primary" type="button" data-save-catalog>Qiyməti saxla</button>
+              <input class="field" data-catalog-sort type="number" placeholder="Sıra">
+              <label class="checkline"><input type="checkbox" data-catalog-active checked> Aktiv</label>
+              <textarea class="textarea span-full code-field" data-catalog-translations placeholder='{"groups":{"en":{"title":"Main platform"},"ru":{"title":"Основная платформа"}},"modules":{"en":{"title":"Corporate Website"},"ru":{"title":"Корпоративный сайт"}}}'></textarea>
+              <button class="btn primary" type="button" data-save-catalog>Saxla</button>
+              <button class="btn danger" type="button" data-delete-catalog>Sil</button>
             </form>
+            <p class="muted">Tövsiyə: qiyməti AZN yazın. Sayt valyutanı aşağıdakı kurs cədvəlinə görə avtomatik çevirəcək.</p>
             <p class="muted" data-catalog-notice></p>
           </section>
+
+          <section class="panel glass" id="rates">
+            <div class="panel-title">
+              <div>
+                <p class="eyebrow">Currency</p>
+                <h2>Valyuta kursları</h2>
+              </div>
+            </div>
+            <form class="admin-form">
+              <input class="field" data-rate-code placeholder="USD">
+              <input class="field" data-rate-symbol placeholder="$">
+              <input class="field" data-rate-value type="number" step="0.000001" min="0" placeholder="1 vahid neçə AZN">
+              <input class="field" data-rate-sort type="number" placeholder="Sıra">
+              <label class="checkline"><input type="checkbox" data-rate-active checked> Aktiv</label>
+              <button class="btn primary" type="button" data-save-rate>Kursu saxla</button>
+            </form>
+            <p class="muted" data-rate-notice></p>
+          </section>
+
+          <section class="panel glass" id="data-manager">
+            <div class="panel-title">
+              <div>
+                <p class="eyebrow">Database</p>
+                <h2>Supabase cədvəl meneceri</h2>
+              </div>
+            </div>
+            <div class="admin-form">
+              <select class="select" data-admin-table></select>
+              <input class="field" data-admin-row-id placeholder="Silinəcək id">
+              <button class="btn" type="button" data-load-table>Cədvəli oxu</button>
+              <button class="btn primary" type="button" data-save-row>JSON sətri saxla</button>
+              <button class="btn danger" type="button" data-delete-row>id üzrə sil</button>
+              <textarea class="textarea span-full code-field" data-admin-json placeholder='{"id":"...","title":"..."}'></textarea>
+            </div>
+            <p class="muted" data-manager-notice></p>
+          </section>
+
           <section class="panel glass">
             <h2>CRM / ERP Ledger</h2>
-            <div class="table-wrap"><table><thead><tr><th>Müştəri</th><th>Layihə</th><th>Status</th><th>Dəyər</th><th>MRR</th><th>Profit</th><th>Domain</th><th>Renewal</th><th>Action</th></tr></thead><tbody data-ledger></tbody></table></div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr><th>Müştəri</th><th>Layihə</th><th>Status</th><th>Dəyər</th><th>MRR</th><th>Profit</th><th>Domain</th><th>Renewal</th><th>Status</th><th>Sil</th></tr>
+                </thead>
+                <tbody data-ledger></tbody>
+              </table>
+            </div>
           </section>
         </section>
       </main>

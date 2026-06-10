@@ -9,19 +9,21 @@ export function defaultState() {
     delivery: "30d",
     support: "none",
     activeGroup: "platform",
-    selected: { platform: "corporate" },
+    selected: {},
     custom: [],
     client: {},
-    _schemaVersion: 2
+    _schemaVersion: 3
   };
 }
 
 export function loadState() {
   const stored = JSON.parse(localStorage.getItem("sp_global_state") || "{}");
   const state = { ...defaultState(), ...stored };
-  if (stored._schemaVersion !== 2) {
+  if (stored._schemaVersion !== 3) {
     state.support = "none";
-    state._schemaVersion = 2;
+    state.selected = {};
+    state.custom = [];
+    state._schemaVersion = 3;
   }
   return state;
 }
@@ -44,16 +46,42 @@ export function applyLanguage(lang) {
 }
 
 export function applyCatalogOverrides(overrides = []) {
-  const map = new Map(overrides.map((item) => [item.module_key, item]));
-  serviceCatalog.forEach((group) => {
-    group.items.forEach((item) => {
-      const override = map.get(item.id);
-      if (!override) return;
-      item.title = override.module_title || item.title;
-      item.price = Number(override.price_azn ?? item.price);
-      item.days = Number(override.days ?? item.days);
-      item.complexity = Number(override.complexity ?? item.complexity);
+  serviceCatalog.length = 0;
+  const groups = new Map();
+  overrides
+    .filter((item) => item?.active !== false)
+    .sort((a, b) => Number(a.sort_order || 0) - Number(b.sort_order || 0))
+    .forEach((item) => {
+      const groupKey = item.group_key || "custom";
+      if (!groups.has(groupKey)) {
+        groups.set(groupKey, {
+          id: groupKey,
+          icon: item.icon || "▫",
+          title: item.group_title || groupKey,
+          type: item.group_type || (groupKey === "platform" ? "radio" : "checkbox"),
+          translations: item.translations?.groups || {},
+          items: []
+        });
+      }
+      groups.get(groupKey).items.push({
+        id: item.module_key,
+        title: item.module_title,
+        price: Number(item.price_azn || 0),
+        days: Number(item.days || 0),
+        complexity: Number(item.complexity || 1),
+        translations: item.translations?.modules || item.translations || {}
+      });
     });
+  serviceCatalog.push(...groups.values());
+}
+
+export function applyCurrencyRates(rows = []) {
+  rows.forEach((row) => {
+    if (!row?.code || !row?.rate_to_azn) return;
+    currencies[row.code] = {
+      symbol: row.symbol || row.code,
+      rate: 1 / Number(row.rate_to_azn)
+    };
   });
 }
 

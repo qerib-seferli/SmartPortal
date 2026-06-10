@@ -1,74 +1,93 @@
-// Bu fayl admin panelində CRM lead-ləri, satılmış layihələri, müştəri assetlərini və maliyyə KPI-larını idarə edir.
-import { loadLeads, money } from "./core.js";
-import { serviceCatalog } from "../data/catalog.js";
-import { createManualProject, loadAdminProjects, loadCatalogOverrides, saveCatalogOverride } from "./supabase-client.js";
+// Bu fayl SmartPortal admin panelini real Supabase məlumatları ilə işlədən CRUD mərkəzidir.
+import { money } from "./core.js";
+import {
+  createManualProject,
+  deleteAdminRow,
+  deleteCatalogItem,
+  deleteProject,
+  loadAdminCatalog,
+  loadAdminProjects,
+  loadAdminRows,
+  saveAdminRow,
+  saveCatalogOverride,
+  saveCurrencyRate,
+  updateProjectStatus
+} from "./supabase-client.js";
 
 const statuses = ["Lead", "Qualified", "Proposal", "Contract", "Development", "QA", "Live", "Support", "Renewal-Due", "Overdue"];
+const managedTables = ["sp_clients", "sp_projects", "sp_project_modules", "sp_domains", "sp_mailboxes", "sp_subscriptions", "sp_invoices", "sp_notifications", "sp_support_tickets", "sp_push_tokens", "sp_catalog_items", "sp_currency_rates"];
+let projectRows = [];
+let catalogRows = [];
 
-async function deals() {
-  const remote = await loadAdminProjects();
-  if (remote.ok && remote.data.length) {
-    return remote.data.map((row) => ({
-      client: row.sp_clients?.company_name || "Müştəri",
-      project: row.title,
-      status: row.status,
-      total: row.total_azn,
-      mrr: row.mrr_azn,
-      profit: row.profit_azn,
-      domain: row.sp_domains?.[0]?.domain_name || "təyin edilməyib",
-      renewal: row.sp_domains?.[0]?.expires_at || "planlaşdırılır"
-    }));
-  }
-  const leads = loadLeads().map((lead) => ({
-    client: lead.client.company || lead.client.name || "Yeni lead",
-    project: lead.selections[0]?.module_title || "Layihə sorğusu",
-    status: lead.deal.status,
-    total: lead.deal.total_azn,
-    mrr: lead.deal.mrr_azn,
-    profit: lead.deal.profit_azn,
-    domain: "təyin edilməyib",
-    renewal: "planlaşdırılır"
-  }));
-  const manual = JSON.parse(localStorage.getItem("sp_global_manual_deals") || "[]");
-  return [...manual, ...leads];
+function by(selector) {
+  return document.querySelector(selector);
+}
+
+function value(selector) {
+  return by(selector)?.value?.trim() || "";
+}
+
+function numberValue(selector, fallback = 0) {
+  const raw = value(selector);
+  return raw === "" ? fallback : Number(raw);
 }
 
 function kpis(rows) {
-  const pipeline = rows.reduce((s, r) => s + r.total, 0);
-  const mrr = rows.reduce((s, r) => s + r.mrr, 0);
-  const profit = rows.reduce((s, r) => s + r.profit, 0);
-  return { pipeline, mrr, arr: mrr * 12, profit, clients: rows.length, renewals: rows.filter((r) => ["Renewal-Due", "Overdue"].includes(r.status)).length };
+  const pipeline = rows.reduce((sum, row) => sum + Number(row.total_azn || 0), 0);
+  const mrr = rows.reduce((sum, row) => sum + Number(row.mrr_azn || 0), 0);
+  const profit = rows.reduce((sum, row) => sum + Number(row.profit_azn || 0), 0);
+  return {
+    pipeline,
+    mrr,
+    arr: mrr * 12,
+    profit,
+    clients: new Set(rows.map((row) => row.client_id || row.sp_clients?.company_name || row.id)).size,
+    renewals: rows.filter((row) => ["Renewal-Due", "Overdue"].includes(row.status)).length
+  };
 }
 
 function renderKpis(rows) {
   const data = kpis(rows);
-  const values = { pipeline: money(data.pipeline), mrr: money(data.mrr), arr: money(data.arr), profit: money(data.profit), clients: data.clients, renewals: data.renewals };
-  Object.entries(values).forEach(([key, value]) => {
-    const node = document.querySelector(`[data-kpi="${key}"]`);
-    if (node) node.textContent = value;
+  const values = {
+    pipeline: money(data.pipeline),
+    mrr: money(data.mrr),
+    arr: money(data.arr),
+    profit: money(data.profit),
+    clients: data.clients,
+    renewals: data.renewals
+  };
+  Object.entries(values).forEach(([key, item]) => {
+    const node = by(`[data-kpi="${key}"]`);
+    if (node) node.textContent = item;
   });
 }
 
 function renderTable(rows) {
-  const body = document.querySelector("[data-ledger]");
+  const body = by("[data-ledger]");
   if (!body) return;
   if (!rows.length) {
-    body.innerHTML = `<tr><td colspan="9" class="muted">Hələ real layihə əlavə edilməyib. Yuxarıdakı formadan satılmış layihəni əlavə edin və ya kalkulyatordan lead göndərin.</td></tr>`;
+    body.innerHTML = `<tr><td colspan="10" class="muted">Supabase-də hələ real layihə yoxdur. Yuxarıdakı formadan ilk müştəri layihəsini əlavə edin.</td></tr>`;
     return;
   }
-  body.innerHTML = rows.map((row, index) => `
-    <tr>
-      <td>${row.client}</td>
-      <td>${row.project}</td>
-      <td><span class="badge">${row.status}</span></td>
-      <td>${money(row.total)}</td>
-      <td>${money(row.mrr)}</td>
-      <td>${money(row.profit)}</td>
-      <td>${row.domain}</td>
-      <td>${row.renewal}</td>
-      <td><button class="btn" data-status="${index}">Status</button></td>
-    </tr>
-  `).join("");
+  body.innerHTML = rows.map((row) => {
+    const client = row.sp_clients?.company_name || row.sp_clients?.contact_name || "Müştəri";
+    const domain = row.sp_domains?.[0]?.domain_name || "";
+    const renewal = row.sp_domains?.[0]?.expires_at || "";
+    return `
+      <tr>
+        <td>${client}</td>
+        <td>${row.title || ""}</td>
+        <td><span class="badge">${row.status || "Lead"}</span></td>
+        <td>${money(Number(row.total_azn || 0))}</td>
+        <td>${money(Number(row.mrr_azn || 0))}</td>
+        <td>${money(Number(row.profit_azn || 0))}</td>
+        <td>${domain}</td>
+        <td>${renewal}</td>
+        <td><button class="btn" data-status-id="${row.id}">Status</button></td>
+        <td><button class="btn danger" data-delete-project="${row.id}">Sil</button></td>
+      </tr>
+    `;
+  }).join("");
 }
 
 function draw(canvas, rows) {
@@ -84,120 +103,216 @@ function draw(canvas, rows) {
   if (!rows.length) {
     ctx.fillStyle = "#9fb4ca";
     ctx.font = "14px Inter, sans-serif";
-    ctx.fillText("Real layihə əlavə ediləndə gəlir qrafiki burada görünəcək.", 18, 42);
+    ctx.fillText("Real layihələr əlavə edildikcə gəlir qrafiki burada formalaşacaq.", 18, 42);
     return;
   }
-  const max = Math.max(...rows.map((r) => r.total), 1);
+  const max = Math.max(...rows.map((row) => Number(row.total_azn || 0)), 1);
   const gap = 12;
-  const bw = Math.max(18, (w - gap * (rows.length + 1)) / rows.length);
-  rows.forEach((row, i) => {
-    const bh = (row.total / max) * (h - 64);
-    const x = gap + i * (bw + gap);
-    const y = h - bh - 30;
-    const g = ctx.createLinearGradient(0, y, 0, h);
-    g.addColorStop(0, "#00e676");
-    g.addColorStop(.55, "#00d5ff");
-    g.addColorStop(1, "#8b5cf6");
-    ctx.fillStyle = g;
-    ctx.fillRect(x, y, bw, bh);
+  const barWidth = Math.max(20, (w - gap * (rows.length + 1)) / rows.length);
+  rows.forEach((row, index) => {
+    const height = (Number(row.total_azn || 0) / max) * (h - 62);
+    const x = gap + index * (barWidth + gap);
+    const y = h - height - 30;
+    const gradient = ctx.createLinearGradient(0, y, 0, h);
+    gradient.addColorStop(0, "#00e676");
+    gradient.addColorStop(.55, "#00d5ff");
+    gradient.addColorStop(1, "#8b5cf6");
+    ctx.fillStyle = gradient;
+    ctx.fillRect(x, y, barWidth, height);
     ctx.fillStyle = "#9fb4ca";
-    ctx.font = "12px Inter, sans-serif";
-    ctx.fillText(row.client.slice(0, 10), x, h - 8);
+    ctx.font = "11px Inter, sans-serif";
+    ctx.fillText((row.sp_clients?.company_name || row.title || "").slice(0, 10), x, h - 8);
   });
 }
 
-async function addManualDeal() {
-  const form = document.querySelector("[data-admin-form]");
+async function refreshProjects() {
+  const result = await loadAdminProjects();
+  projectRows = result.ok ? result.data : [];
+  renderKpis(projectRows);
+  renderTable(projectRows);
+  draw(by("[data-chart]"), projectRows);
+}
+
+async function addProject() {
+  const form = by("[data-admin-form]");
+  const notice = by("[data-admin-notice]");
   if (!form) return;
   const data = Object.fromEntries(new FormData(form).entries());
-  const notice = document.querySelector("[data-admin-notice]");
   if (!data.client?.trim() || !data.project?.trim()) {
-    if (notice) notice.textContent = "Müştəri və layihə adı daxil edilməlidir.";
+    if (notice) notice.textContent = "Müştəri və layihə adı mütləq daxil edilməlidir.";
     return;
   }
-  const rows = JSON.parse(localStorage.getItem("sp_global_manual_deals") || "[]");
-  rows.unshift({
-    client: data.client.trim(),
-    project: data.project.trim(),
-    status: data.status || "Lead",
-    total: Number(data.total || 0),
-    mrr: Number(data.mrr || 0),
-    profit: Number(data.profit || 0),
-    domain: data.domain?.trim() || "təyin edilməyib",
-    renewal: data.renewal || "planlaşdırılır"
-  });
-  localStorage.setItem("sp_global_manual_deals", JSON.stringify(rows));
-  await createManualProject(Object.fromEntries(new FormData(form).entries()));
-  form.reset();
-  if (notice) notice.textContent = "Layihə əlavə olundu.";
-  await refresh();
+  const result = await createManualProject(data);
+  if (notice) notice.textContent = result.ok ? "Layihə Supabase bazasına əlavə olundu." : `Əlavə edilmədi: ${result.message}`;
+  if (result.ok) form.reset();
+  await refreshProjects();
 }
 
-async function refresh() {
-  const rows = await deals();
-  renderKpis(rows);
-  renderTable(rows);
-  draw(document.querySelector("[data-chart]"), rows);
+function parseJson(raw, fallback = {}) {
+  if (!raw.trim()) return fallback;
+  try {
+    return JSON.parse(raw);
+  } catch {
+    return fallback;
+  }
 }
 
-async function renderCatalogEditor() {
-  const groupSelect = document.querySelector("[data-catalog-group]");
-  const itemSelect = document.querySelector("[data-catalog-item]");
-  if (!groupSelect || !itemSelect) return;
-  groupSelect.innerHTML = serviceCatalog.map((group) => `<option value="${group.id}">${group.icon} ${group.title}</option>`).join("");
-  await loadCatalogOverrides();
-  const fillItems = () => {
-    const group = serviceCatalog.find((entry) => entry.id === groupSelect.value) || serviceCatalog[0];
-    itemSelect.innerHTML = group.items.map((item) => `<option value="${item.id}">${item.title}</option>`).join("");
-    fillFields();
-  };
-  const fillFields = () => {
-    const group = serviceCatalog.find((entry) => entry.id === groupSelect.value) || serviceCatalog[0];
-    const item = group.items.find((entry) => entry.id === itemSelect.value) || group.items[0];
-    document.querySelector("[data-catalog-title]").value = item.title;
-    document.querySelector("[data-catalog-price]").value = item.price;
-    document.querySelector("[data-catalog-days]").value = item.days;
-    document.querySelector("[data-catalog-complexity]").value = item.complexity;
-  };
-  groupSelect.addEventListener("change", fillItems);
-  itemSelect.addEventListener("change", fillFields);
-  fillItems();
+function fillCatalogForm(row = {}) {
+  by("[data-catalog-id]").value = row.id || "";
+  by("[data-catalog-group-key]").value = row.group_key || "";
+  by("[data-catalog-group-title]").value = row.group_title || "";
+  by("[data-catalog-group-type]").value = row.group_type || "checkbox";
+  by("[data-catalog-icon]").value = row.icon || "▫";
+  by("[data-catalog-module-key]").value = row.module_key || "";
+  by("[data-catalog-title]").value = row.module_title || "";
+  by("[data-catalog-price]").value = row.price_azn ?? "";
+  by("[data-catalog-days]").value = row.days ?? "";
+  by("[data-catalog-complexity]").value = row.complexity ?? 1;
+  by("[data-catalog-sort]").value = row.sort_order ?? 0;
+  by("[data-catalog-active]").checked = row.active !== false;
+  by("[data-catalog-translations]").value = JSON.stringify(row.translations || {}, null, 2);
+}
+
+function renderCatalogSelect() {
+  const select = by("[data-catalog-row]");
+  if (!select) return;
+  select.innerHTML = `<option value="">Yeni seçim əlavə et</option>` + catalogRows.map((row) => `<option value="${row.id}">${row.group_key} / ${row.module_title}</option>`).join("");
+}
+
+async function refreshCatalog() {
+  const result = await loadAdminCatalog();
+  catalogRows = result.ok ? result.data : [];
+  renderCatalogSelect();
+  if (!by("[data-catalog-id]")?.value) fillCatalogForm({});
 }
 
 async function saveCatalog() {
-  const group = serviceCatalog.find((entry) => entry.id === document.querySelector("[data-catalog-group]").value);
-  const itemId = document.querySelector("[data-catalog-item]").value;
-  const item = group.items.find((entry) => entry.id === itemId);
+  const notice = by("[data-catalog-notice]");
   const payload = {
-    group_key: group.id,
-    group_title: group.title,
-    module_key: item.id,
-    module_title: document.querySelector("[data-catalog-title]").value,
-    price_azn: Number(document.querySelector("[data-catalog-price]").value || 0),
-    days: Number(document.querySelector("[data-catalog-days]").value || 0),
-    complexity: Number(document.querySelector("[data-catalog-complexity]").value || 1)
+    id: value("[data-catalog-id]") || undefined,
+    group_key: value("[data-catalog-group-key]"),
+    group_title: value("[data-catalog-group-title]"),
+    group_type: value("[data-catalog-group-type]") || "checkbox",
+    icon: value("[data-catalog-icon]") || "▫",
+    module_key: value("[data-catalog-module-key]"),
+    module_title: value("[data-catalog-title]"),
+    price_azn: numberValue("[data-catalog-price]"),
+    days: numberValue("[data-catalog-days]"),
+    complexity: numberValue("[data-catalog-complexity]", 1),
+    sort_order: numberValue("[data-catalog-sort]"),
+    active: by("[data-catalog-active]")?.checked !== false,
+    translations: parseJson(value("[data-catalog-translations]"), {})
   };
+  if (!payload.group_key || !payload.module_key || !payload.module_title) {
+    if (notice) notice.textContent = "Qrup açarı, modul açarı və modul adı boş ola bilməz.";
+    return;
+  }
   const result = await saveCatalogOverride(payload);
-  const notice = document.querySelector("[data-catalog-notice]");
-  if (notice) notice.textContent = result.ok ? "Katalog qiyməti Supabase-də yeniləndi." : `Yadda saxlanmadı: ${result.message}`;
+  if (notice) notice.textContent = result.ok ? "Katalog sətiri saxlanıldı." : `Saxlanmadı: ${result.message}`;
+  await refreshCatalog();
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-  refresh();
-  renderCatalogEditor();
-  document.addEventListener("click", async (event) => {
-    if (event.target.closest("[data-add-deal]")) addManualDeal();
-    if (event.target.closest("[data-save-catalog]")) saveCatalog();
-    const status = event.target.closest("[data-status]");
-    if (status) {
-      const manual = JSON.parse(localStorage.getItem("sp_global_manual_deals") || "[]");
-      const rows = await deals();
-      const row = rows[Number(status.dataset.status)];
-      row.status = statuses[(statuses.indexOf(row.status) + 1) % statuses.length] || "Lead";
-      manual.unshift(row);
-      localStorage.setItem("sp_global_manual_deals", JSON.stringify(manual));
-      refresh();
+async function removeCatalog() {
+  const id = value("[data-catalog-id]");
+  const notice = by("[data-catalog-notice]");
+  if (!id) {
+    if (notice) notice.textContent = "Silmək üçün əvvəl katalog sətri seçin.";
+    return;
+  }
+  const result = await deleteCatalogItem(id);
+  if (notice) notice.textContent = result.ok ? "Katalog sətri silindi." : `Silinmədi: ${result.message}`;
+  fillCatalogForm({});
+  await refreshCatalog();
+}
+
+async function saveRate() {
+  const notice = by("[data-rate-notice]");
+  const payload = {
+    code: value("[data-rate-code]").toUpperCase(),
+    symbol: value("[data-rate-symbol]"),
+    rate_to_azn: numberValue("[data-rate-value]", 1),
+    active: by("[data-rate-active]")?.checked !== false,
+    sort_order: numberValue("[data-rate-sort]")
+  };
+  if (!payload.code || !payload.symbol || !payload.rate_to_azn) {
+    if (notice) notice.textContent = "Valyuta kodu, simvolu və AZN kursu mütləqdir.";
+    return;
+  }
+  const result = await saveCurrencyRate(payload);
+  if (notice) notice.textContent = result.ok ? "Valyuta kursu saxlanıldı." : `Saxlanmadı: ${result.message}`;
+}
+
+function setupDataManager() {
+  const tableSelect = by("[data-admin-table]");
+  if (!tableSelect) return;
+  tableSelect.innerHTML = managedTables.map((table) => `<option value="${table}">${table}</option>`).join("");
+}
+
+async function loadManagerRows() {
+  const result = await loadAdminRows(value("[data-admin-table]"));
+  const output = by("[data-admin-json]");
+  const notice = by("[data-manager-notice]");
+  if (output) output.value = JSON.stringify(result.data || [], null, 2);
+  if (notice) notice.textContent = result.ok ? "Cədvəl oxundu. Redaktə üçün bir obyekt saxlayın." : result.message;
+}
+
+async function saveManagerRow() {
+  const row = parseJson(value("[data-admin-json]"), null);
+  const notice = by("[data-manager-notice]");
+  if (!row || Array.isArray(row)) {
+    if (notice) notice.textContent = "Saxlamaq üçün textarea-da tək JSON obyekt olmalıdır.";
+    return;
+  }
+  const result = await saveAdminRow(value("[data-admin-table]"), row);
+  if (notice) notice.textContent = result.ok ? "Sətir saxlanıldı." : `Saxlanmadı: ${result.message}`;
+}
+
+async function deleteManagerRow() {
+  const id = value("[data-admin-row-id]");
+  const notice = by("[data-manager-notice]");
+  if (!id) {
+    if (notice) notice.textContent = "Silinən sətirin id dəyərini yazın.";
+    return;
+  }
+  const result = await deleteAdminRow(value("[data-admin-table]"), id);
+  if (notice) notice.textContent = result.ok ? "Sətir silindi." : `Silinmədi: ${result.message}`;
+}
+
+document.addEventListener("DOMContentLoaded", async () => {
+  setupDataManager();
+  await Promise.all([refreshProjects(), refreshCatalog()]);
+
+  document.addEventListener("change", (event) => {
+    if (event.target.matches("[data-catalog-row]")) {
+      const row = catalogRows.find((item) => item.id === event.target.value);
+      fillCatalogForm(row || {});
     }
   });
-  window.addEventListener("resize", refresh);
+
+  document.addEventListener("click", async (event) => {
+    if (event.target.closest("[data-add-deal]")) await addProject();
+    if (event.target.closest("[data-save-catalog]")) await saveCatalog();
+    if (event.target.closest("[data-new-catalog]")) fillCatalogForm({});
+    if (event.target.closest("[data-delete-catalog]")) await removeCatalog();
+    if (event.target.closest("[data-save-rate]")) await saveRate();
+    if (event.target.closest("[data-load-table]")) await loadManagerRows();
+    if (event.target.closest("[data-save-row]")) await saveManagerRow();
+    if (event.target.closest("[data-delete-row]")) await deleteManagerRow();
+
+    const statusButton = event.target.closest("[data-status-id]");
+    if (statusButton) {
+      const row = projectRows.find((item) => item.id === statusButton.dataset.statusId);
+      const next = statuses[(statuses.indexOf(row?.status) + 1) % statuses.length] || "Lead";
+      await updateProjectStatus(statusButton.dataset.statusId, next);
+      await refreshProjects();
+    }
+
+    const deleteButton = event.target.closest("[data-delete-project]");
+    if (deleteButton) {
+      await deleteProject(deleteButton.dataset.deleteProject);
+      await refreshProjects();
+    }
+  });
+
+  window.addEventListener("resize", () => draw(by("[data-chart]"), projectRows));
 });

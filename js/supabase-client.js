@@ -107,6 +107,22 @@ export async function loadAdminProjects() {
   return { ok: true, data };
 }
 
+// Bu siyahı admin paneldə ümumi data menecerinin işləyə biləcəyi cədvəlləri məhdudlaşdırır.
+const adminTables = new Set([
+  "sp_clients",
+  "sp_projects",
+  "sp_project_modules",
+  "sp_domains",
+  "sp_mailboxes",
+  "sp_subscriptions",
+  "sp_invoices",
+  "sp_notifications",
+  "sp_support_tickets",
+  "sp_push_tokens",
+  "sp_catalog_items",
+  "sp_currency_rates"
+]);
+
 // Bu funksiya adminin satılmış layihəni Supabase-ə əlavə etməsi üçün RPC çağırır.
 export async function createManualProject(projectPayload) {
   const supabase = await getSupabase();
@@ -120,7 +136,34 @@ export async function createManualProject(projectPayload) {
 export async function loadCatalogOverrides() {
   const supabase = await getSupabase();
   if (!supabase) return [];
-  const { data, error } = await supabase.from("sp_catalog_items").select("*");
+  const { data, error } = await supabase.rpc("sp_public_catalog");
+  if (error) return [];
+  return data || [];
+}
+
+// Bu funksiya admin üçün aktiv/passiv bütün katalog sətirlərini gətirir.
+export async function loadAdminCatalog() {
+  const supabase = await getSupabase();
+  if (!supabase) return { ok: false, data: [], message: "Supabase config yoxdur." };
+  const { data, error } = await supabase
+    .from("sp_catalog_items")
+    .select("*")
+    .order("sort_order", { ascending: true })
+    .order("group_key", { ascending: true })
+    .order("module_title", { ascending: true });
+  if (error) return { ok: false, data: [], message: error.message };
+  return { ok: true, data: data || [] };
+}
+
+// Bu funksiya adminin valyuta kurslarını Supabase-dən oxuması üçündür.
+export async function loadCurrencyRates() {
+  const supabase = await getSupabase();
+  if (!supabase) return [];
+  const { data, error } = await supabase
+    .from("sp_currency_rates")
+    .select("*")
+    .eq("active", true)
+    .order("sort_order", { ascending: true });
   if (error) return [];
   return data || [];
 }
@@ -130,6 +173,72 @@ export async function saveCatalogOverride(item) {
   const supabase = await getSupabase();
   if (!supabase) return { ok: false, message: "Supabase config yoxdur." };
   const { error } = await supabase.from("sp_catalog_items").upsert(item, { onConflict: "module_key" });
+  if (error) return { ok: false, message: error.message };
+  return { ok: true };
+}
+
+// Bu funksiya katalog elementini bazadan silir.
+export async function deleteCatalogItem(id) {
+  const supabase = await getSupabase();
+  if (!supabase) return { ok: false, message: "Supabase config yoxdur." };
+  const { error } = await supabase.from("sp_catalog_items").delete().eq("id", id);
+  if (error) return { ok: false, message: error.message };
+  return { ok: true };
+}
+
+// Bu funksiya valyuta kursunu admin paneldən yeniləyir.
+export async function saveCurrencyRate(rate) {
+  const supabase = await getSupabase();
+  if (!supabase) return { ok: false, message: "Supabase config yoxdur." };
+  const { error } = await supabase.from("sp_currency_rates").upsert(rate, { onConflict: "code" });
+  if (error) return { ok: false, message: error.message };
+  return { ok: true };
+}
+
+// Bu funksiya layihə statusunu real Supabase cədvəlində dəyişir.
+export async function updateProjectStatus(projectId, status) {
+  const supabase = await getSupabase();
+  if (!supabase) return { ok: false, message: "Supabase config yoxdur." };
+  const { error } = await supabase.from("sp_projects").update({ status }).eq("id", projectId);
+  if (error) return { ok: false, message: error.message };
+  return { ok: true };
+}
+
+// Bu funksiya layihəni və ona bağlı cascade datanı bazadan silir.
+export async function deleteProject(projectId) {
+  const supabase = await getSupabase();
+  if (!supabase) return { ok: false, message: "Supabase config yoxdur." };
+  const { data, error } = await supabase.rpc("sp_admin_delete_project", { project_id_input: projectId });
+  if (error) return { ok: false, message: error.message };
+  return { ok: true, data };
+}
+
+// Bu funksiya whitelist daxilində istənilən admin cədvəlindən sətirləri oxuyur.
+export async function loadAdminRows(tableName) {
+  const supabase = await getSupabase();
+  if (!supabase) return { ok: false, data: [], message: "Supabase config yoxdur." };
+  if (!adminTables.has(tableName)) return { ok: false, data: [], message: "Bu cədvəl admin menecerinə açılmayıb." };
+  const { data, error } = await supabase.from(tableName).select("*").limit(100);
+  if (error) return { ok: false, data: [], message: error.message };
+  return { ok: true, data: data || [] };
+}
+
+// Bu funksiya whitelist daxilində sətir əlavə/redakt edir.
+export async function saveAdminRow(tableName, row) {
+  const supabase = await getSupabase();
+  if (!supabase) return { ok: false, message: "Supabase config yoxdur." };
+  if (!adminTables.has(tableName)) return { ok: false, message: "Bu cədvəl admin menecerinə açılmayıb." };
+  const { error } = await supabase.from(tableName).upsert(row);
+  if (error) return { ok: false, message: error.message };
+  return { ok: true };
+}
+
+// Bu funksiya whitelist daxilində id üzrə sətir silir.
+export async function deleteAdminRow(tableName, id) {
+  const supabase = await getSupabase();
+  if (!supabase) return { ok: false, message: "Supabase config yoxdur." };
+  if (!adminTables.has(tableName)) return { ok: false, message: "Bu cədvəl admin menecerinə açılmayıb." };
+  const { error } = await supabase.from(tableName).delete().eq("id", id);
   if (error) return { ok: false, message: error.message };
   return { ok: true };
 }

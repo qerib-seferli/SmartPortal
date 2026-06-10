@@ -347,10 +347,7 @@ export function buildCatalog() {
   }));
 }
 
-export const serviceCatalog = [
-  { id: "platform", icon: "🏗️", title: "Ana platforma", type: "radio", items: platformTypes },
-  ...buildCatalog()
-];
+export const serviceCatalog = [];
 
 export function stats() {
   return {

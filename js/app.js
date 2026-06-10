@@ -1,7 +1,7 @@
 // Bu fayl GLOBAL PRO ana səhifə, 480+ seçim kalkulyatoru və çoxdilli UI renderini idarə edir.
 import { currencies, delivery, languages, serviceCatalog, stats, support } from "../data/catalog.js";
-import { applyCatalogOverrides, applyLanguage, calculate, defaultState, loadState, money, payload, requestPushNotification, saveLead, saveState } from "./core.js";
-import { loadCatalogOverrides, submitLeadToSupabase } from "./supabase-client.js";
+import { applyCatalogOverrides, applyCurrencyRates, applyLanguage, calculate, defaultState, loadState, money, payload, requestPushNotification, saveLead, saveState } from "./core.js";
+import { loadCatalogOverrides, loadCurrencyRates, submitLeadToSupabase } from "./supabase-client.js";
 
 let state = loadState();
 const $ = (selector) => document.querySelector(selector);
@@ -28,7 +28,18 @@ const groupTranslations = {
   }
 };
 
+const liveUiPatch = {
+  az: { emptyCatalog: "Kataloq hələ əlavə edilməyib. Admin paneldən real xidmətləri və qiymətləri daxil edin.", emptyTitle: "Real katalog gözlənilir" },
+  en: { emptyCatalog: "Catalog is empty. Add real services and prices from the admin panel.", emptyTitle: "Waiting for live catalog" },
+  tr: { emptyCatalog: "Katalog boş. Gerçek hizmetleri ve fiyatları admin panelinden ekleyin.", emptyTitle: "Canlı katalog bekleniyor" },
+  ru: { emptyCatalog: "Каталог пуст. Добавьте реальные услуги и цены в админ-панели.", emptyTitle: "Ожидается живой каталог" },
+  fr: { emptyCatalog: "Le catalogue est vide. Ajoutez les services et prix réels depuis l'administration.", emptyTitle: "Catalogue réel en attente" }
+};
+Object.entries(liveUiPatch).forEach(([lang, values]) => Object.assign(uiText[lang] ||= {}, values));
+
 function groupTitle(group) {
+  const translated = group.translations?.[state.lang]?.title || group.translations?.[state.lang];
+  if (translated) return translated;
   return (groupTranslations[state.lang] || {})[group.id] || group.title;
 }
 
@@ -83,6 +94,8 @@ const supportTitleMap = {
 };
 
 function itemTitle(item) {
+  const translated = item.translations?.[state.lang]?.title || item.translations?.[state.lang];
+  if (translated) return translated;
   const platformName = (platformTitleMap[state.lang] || {})[item.id];
   if (platformName) return platformName;
   const [base, tier] = item.title.split(/ · | Â· /);
@@ -134,6 +147,10 @@ function renderStats() {
 function renderGroups() {
   const root = $("[data-groups]");
   if (!root) return;
+  if (!serviceCatalog.length) {
+    root.innerHTML = `<div class="empty-state">${ui("emptyCatalog")}</div>`;
+    return;
+  }
   root.innerHTML = serviceCatalog.map((group) => {
     const selected = state.selected[group.id];
     const count = Array.isArray(selected) ? selected.length : selected ? 1 : 0;
@@ -147,6 +164,12 @@ function renderOptions() {
   const hint = $("[data-group-hint]");
   const root = $("[data-options]");
   if (!title || !hint || !root) return;
+  if (!group) {
+    title.textContent = ui("emptyTitle");
+    hint.textContent = ui("emptyCatalog");
+    root.innerHTML = "";
+    return;
+  }
   title.textContent = `${group.icon} ${groupTitle(group)}`;
   hint.textContent = group.type === "radio" ? ui("platformHint") : `${group.items.length} ${ui("groupHint")}`;
   root.innerHTML = group.items.map((item) => {
@@ -254,7 +277,11 @@ function bind() {
     if (event.target.closest("[data-add-custom]")) addCustom();
     if (event.target.closest("[data-submit-lead]")) submitLead();
     if (event.target.closest("[data-reset]")) {
+      const currentLang = state.lang;
+      const currentCurrency = state.currency;
       state = defaultState();
+      state.lang = currentLang;
+      state.currency = currentCurrency;
       const leadForm = $("[data-lead-form]");
       if (leadForm) leadForm.reset();
       const notes = document.querySelector("[name='notes']");
@@ -308,7 +335,9 @@ function renderAll() {
 }
 
 document.addEventListener("DOMContentLoaded", async () => {
+  applyCurrencyRates(await loadCurrencyRates());
   applyCatalogOverrides(await loadCatalogOverrides());
+  if (!serviceCatalog.some((group) => group.id === state.activeGroup)) state.activeGroup = serviceCatalog[0]?.id || "platform";
   renderTopControls();
   renderStats();
   bind();
